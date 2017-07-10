@@ -1,8 +1,10 @@
 package com.momu.callrock;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
@@ -33,6 +35,21 @@ public class SplashActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_splash);
 
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getObserve();
+
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                finish();
+            }
+        },500);
+    }
+
+
+
+    private void getObserve() {
         RequestQueue queue = Volley.newRequestQueue(this);
 
         String url = "http://openapi.airkorea.or.kr/openapi/services/rest/MsrstnInfoInqireSvc/getMsrstnList?pageNo=1&numOfRows=400&ServiceKey=NCPIDFE%2F7buZ0eIVTd6x6iqFLtZRkGcVW%2FZuKO1g%2BM9cCN8YBQBmPIKzaP%2B9MTfyyNMhXDS3SkK8%2FjiyINYe0A%3D%3D&_returnType=json";
