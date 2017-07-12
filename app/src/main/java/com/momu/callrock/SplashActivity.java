@@ -93,7 +93,6 @@ public class SplashActivity extends AppCompatActivity {
             }
         });
 
-
         queue.add(jsonRequest);
     }
 }
