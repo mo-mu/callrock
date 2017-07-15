@@ -7,7 +7,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 
 import com.momu.callrock.Adapter.SearchArrayAdapter;
 import com.momu.callrock.Item.SearchDropdownItem;
@@ -26,6 +28,8 @@ public class SearchActivity extends AppCompatActivity {
 
     Context context;
     ArrayList<SearchDropdownItem> addrList;
+    Button btnBack;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,5 +57,14 @@ public class SearchActivity extends AppCompatActivity {
         Log.e("count", ""+addrList.size());
         ArrayAdapter adapter = new SearchArrayAdapter<SearchDropdownItem>(context,R.layout.item_dropdown,addrList);
         autoTextView.setAdapter(adapter);
+
+
+        btnBack = (Button)findViewById(R.id.btn_back);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 }

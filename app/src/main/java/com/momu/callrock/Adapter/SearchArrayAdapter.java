@@ -35,7 +35,6 @@ public class SearchArrayAdapter<S> extends ArrayAdapter<SearchDropdownItem> {
         this.suggestions = new ArrayList<>();
         this.context = context;
         this.item_dropdown = item_dropdown;
-        Log.e("adsf","asdf");
     }
 
 
