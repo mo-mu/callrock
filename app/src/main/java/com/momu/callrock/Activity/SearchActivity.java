@@ -1,4 +1,4 @@
-package com.momu.callrock;
+package com.momu.callrock.Activity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -9,12 +9,14 @@ import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
+import com.momu.callrock.Adapter.SearchArrayAdapter;
+import com.momu.callrock.Item.SearchDropdownItem;
+import com.momu.callrock.R;
+
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by songm on 2017-07-09.
@@ -23,7 +25,7 @@ import java.util.List;
 public class SearchActivity extends AppCompatActivity {
 
     Context context;
-    final List<String> addrList = new ArrayList<>();
+    ArrayList<SearchDropdownItem> addrList;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,16 +39,19 @@ public class SearchActivity extends AppCompatActivity {
         String text = prefs.getString("Observe", "");
 
         try {
+            addrList = new ArrayList<>();
             JSONArray jsonArray = new JSONArray(text);
             for(int i=0; i<jsonArray.length();i++){
                 Log.e(""+i+" : ",jsonArray.getJSONObject(i).getString("addr"));
-                addrList.add(jsonArray.getJSONObject(i).getString("addr"));
+                addrList.add(new SearchDropdownItem(jsonArray.getJSONObject(i).getString("addr"), jsonArray.getJSONObject(i).getString("stationName")));
+                Log.e(addrList.get(i).getAddr(),addrList.get(i).getStationName());
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context,android.R.layout.simple_dropdown_item_1line,addrList);
+        Log.e("count", ""+addrList.size());
+        ArrayAdapter adapter = new SearchArrayAdapter<SearchDropdownItem>(context,R.layout.item_dropdown,addrList);
         autoTextView.setAdapter(adapter);
     }
 }
