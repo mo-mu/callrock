@@ -3,7 +3,6 @@ package com.momu.callrock.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,15 +26,15 @@ public class SearchArrayAdapter<S> extends ArrayAdapter<SearchDropdownItem> {
     private List<SearchDropdownItem> addrList;
     private ArrayList<SearchDropdownItem> itemsAll;
     private ArrayList<SearchDropdownItem> suggestions;
-    private int item_dropdown;
+    private int itemDropdown;
 
-    public SearchArrayAdapter(Context context, int item_dropdown, ArrayList<SearchDropdownItem> addrList) {
-        super(context, item_dropdown, addrList);
+    public SearchArrayAdapter(Context context, int itemDropdown, ArrayList<SearchDropdownItem> addrList) {
+        super(context, itemDropdown, addrList);
         this.addrList = addrList;
         this.itemsAll = (ArrayList<SearchDropdownItem>) addrList.clone();
         this.suggestions = new ArrayList<>();
         this.context = context;
-        this.item_dropdown = item_dropdown;
+        this.itemDropdown = itemDropdown;
     }
 
 
@@ -45,7 +44,7 @@ public class SearchArrayAdapter<S> extends ArrayAdapter<SearchDropdownItem> {
         View v = convertView;
         if (v == null) {
             LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = vi.inflate(item_dropdown, null);
+            v = vi.inflate(itemDropdown, null);
         }
         SearchDropdownItem item = addrList.get(position);
         if (item != null) {

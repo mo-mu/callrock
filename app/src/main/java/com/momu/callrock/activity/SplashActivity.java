@@ -15,6 +15,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.momu.callrock.R;
 import com.momu.callrock.constant.CConstants;
+import com.momu.callrock.utility.LogHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,15 +32,15 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getObserve();
-
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                finish();
-            }
-        }, 500);
+        getObserve();
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//
+////                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+////                finish();
+//            }
+//        }, 500);
     }
 
 
@@ -54,6 +55,7 @@ public class SplashActivity extends AppCompatActivity {
             public void onResponse(JSONObject response) {
                 try {
                     JSONArray jsonObject = response.getJSONArray("list");
+                    LogHelper.e("@@@", jsonObject.toString());
                     JSONArray result = new JSONArray();
 
                     if (jsonObject != null) {
@@ -76,11 +78,15 @@ public class SplashActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                finish();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                finish();
             }
         });
 
