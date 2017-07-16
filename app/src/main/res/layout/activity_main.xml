@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.momu.callrock.activity.MainActivity">
+    android:id="@+id/drawerLayout"
+    tools:context="com.momu.callrock.Activity.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -174,11 +175,63 @@
                 android:text="오늘은 마음껏 산책하세요."/>
         </LinearLayout>
     </LinearLayout>
+
+
     <android.support.design.widget.NavigationView
         android:id="@+id/navView"
         android:layout_height="match_parent"
         android:layout_width="wrap_content"
         android:layout_gravity="end"
         android:fitsSystemWindows="true"
-        app:elevation="24dp"/>
+        app:elevation="24dp">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="WHO 기준"/>
+                <android.support.v7.widget.SwitchCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="WHO 기준"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="앱버전"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1.0"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="미세먼지 \n0~50 좋음\n50~100 보통 \n초미세먼지"/>
+            </LinearLayout>
+        </LinearLayout>
+        </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>
