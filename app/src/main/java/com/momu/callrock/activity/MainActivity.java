@@ -9,6 +9,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -34,10 +35,12 @@ import butterknife.OnClick;
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.drawerLayout) DrawerLayout drawerLayout;
     @BindView(R.id.navView) NavigationView navigationView;
+    @BindView(R.id.txt_main) TextView txtMain;
 
     Context mContext;
     double locationX, locationY;
     String nearestStationName = null;
+
 
     private static final String TAG = "MainActivity";
 
@@ -104,13 +107,14 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(JSONObject response) {
                 try {
                     JSONArray jsonArray = response.getJSONArray("list");
-                    LogHelper.e("@@@", jsonArray.toString());
+                    LogHelper.e(TAG, jsonArray.toString());
 
                     nearestStationName = jsonArray.getJSONObject(0).getString("stationName");
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             Toast.makeText(mContext, "가장 가까운 측정소는 " + nearestStationName + " 측정소 입니다.", Toast.LENGTH_LONG).show();
+                            getStationDetail();
                         }
                     });
 
@@ -126,6 +130,43 @@ public class MainActivity extends AppCompatActivity {
         });
 
         queue.add(jsonRequest);
+    }
+
+    void getStationDetail() {
+        if (nearestStationName != null) {
+            RequestQueue queue = Volley.newRequestQueue(this);
+
+            JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, CConstants.URL_STATION_DETAIL + nearestStationName, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        final JSONArray jsonArray = response.getJSONArray("list");
+                        LogHelper.e(TAG, jsonArray.toString());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    txtMain.setText(jsonArray.getJSONObject(0).toString());
+                                    Toast.makeText(mContext, "가장 가까운 측정소는 " + nearestStationName + " 측정소 입니다.", Toast.LENGTH_LONG).show();
+                                } catch (JSONException e) {
+                                    LogHelper.errorStackTrace(e);
+                                }
+                            }
+                        });
+
+                    } catch (JSONException e) {
+                        LogHelper.errorStackTrace(e);
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    LogHelper.e(TAG, "ERROR : " + error.getMessage());
+                }
+            });
+
+            queue.add(jsonRequest);
+        }
     }
 
     /**

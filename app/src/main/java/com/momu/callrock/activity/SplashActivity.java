@@ -27,6 +27,8 @@ import org.json.JSONObject;
  */
 public class SplashActivity extends AppCompatActivity {
 
+    private static final String TAG = "SplashActivity";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +87,7 @@ public class SplashActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                LogHelper.e(TAG, "ERROR : " + error.getMessage());
                 startActivity(new Intent(SplashActivity.this, MainActivity.class));
                 finish();
             }
