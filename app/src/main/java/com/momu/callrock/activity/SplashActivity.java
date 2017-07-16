@@ -1,4 +1,4 @@
-package com.momu.callrock.Activity;
+package com.momu.callrock.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,23 +14,22 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.momu.callrock.R;
+import com.momu.callrock.constant.CConstants;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * 스플레시 페이지
  * Created by songm on 2017-07-09.
  */
-
 public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_splash);
-
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -48,12 +47,10 @@ public class SplashActivity extends AppCompatActivity {
     private void getObserve() {
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        String url = "http://openapi.airkorea.or.kr/openapi/services/rest/MsrstnInfoInqireSvc/getMsrstnList?pageNo=1&numOfRows=400&ServiceKey=NCPIDFE%2F7buZ0eIVTd6x6iqFLtZRkGcVW%2FZuKO1g%2BM9cCN8YBQBmPIKzaP%2B9MTfyyNMhXDS3SkK8%2FjiyINYe0A%3D%3D&_returnType=json";
-
         final SharedPreferences preferences =getSharedPreferences("Pref",MODE_PRIVATE);
         final SharedPreferences.Editor editor = preferences.edit();
 
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, CConstants.URL_STATION_INFO, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
@@ -74,8 +71,7 @@ public class SplashActivity extends AppCompatActivity {
                             result.put(curObs);
                         }
 
-                        editor.putString("Observe",result.toString());
-                        editor.commit();
+                        editor.putString("Observe",result.toString()).apply();
                     }
 
                 } catch (JSONException e) {

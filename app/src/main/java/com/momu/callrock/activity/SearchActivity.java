@@ -1,49 +1,52 @@
-package com.momu.callrock.Activity;
+package com.momu.callrock.activity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 
-import com.momu.callrock.Adapter.SearchArrayAdapter;
-import com.momu.callrock.Item.SearchDropdownItem;
+import com.momu.callrock.adapter.SearchArrayAdapter;
+import com.momu.callrock.item.SearchDropdownItem;
 import com.momu.callrock.R;
+import com.momu.callrock.utility.LogHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 /**
+ * 검색 페이지
  * Created by songm on 2017-07-09.
  */
-
 public class SearchActivity extends AppCompatActivity {
-
     Context context;
     ArrayList<SearchDropdownItem> addrList;
-    Button btnBack;
+    ArrayAdapter adapter;
+
+    @BindView(R.id.autoTextView) AutoCompleteTextView autoTextView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_search);
-
+        ButterKnife.bind(this);
         context = this;
-        final AppCompatAutoCompleteTextView autoTextView = (AppCompatAutoCompleteTextView)findViewById(R.id.autoTextView);
 
         SharedPreferences prefs = getSharedPreferences("Pref", MODE_PRIVATE);
         String text = prefs.getString("Observe", "");
-
+        addrList = new ArrayList<>();
         try {
-            addrList = new ArrayList<>();
             JSONArray jsonArray = new JSONArray(text);
             for(int i=0; i<jsonArray.length();i++){
                 Log.e(""+i+" : ",jsonArray.getJSONObject(i).getString("addr"));
@@ -51,20 +54,19 @@ public class SearchActivity extends AppCompatActivity {
                 Log.e(addrList.get(i).getAddr(),addrList.get(i).getStationName());
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            LogHelper.errorStackTrace(e);
         }
 
         Log.e("count", ""+addrList.size());
-        ArrayAdapter adapter = new SearchArrayAdapter<SearchDropdownItem>(context,R.layout.item_dropdown,addrList);
+        adapter = new SearchArrayAdapter<SearchDropdownItem>(context,R.layout.item_dropdown,addrList);
         autoTextView.setAdapter(adapter);
+    }
 
-
-        btnBack = (Button)findViewById(R.id.btn_back);
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+    /**
+     * 백버튼 클릭 이벤트
+     */
+    @OnClick(R.id.btn_back)
+    void btnBackClick() {
+        finish();
     }
 }
