@@ -49,15 +49,15 @@ public class SearchActivity extends AppCompatActivity {
         try {
             JSONArray jsonArray = new JSONArray(text);
             for(int i=0; i<jsonArray.length();i++){
-                Log.e(""+i+" : ",jsonArray.getJSONObject(i).getString("addr"));
+                LogHelper.e(""+i+" : ",jsonArray.getJSONObject(i).getString("addr"));
                 addrList.add(new SearchDropdownItem(jsonArray.getJSONObject(i).getString("addr"), jsonArray.getJSONObject(i).getString("stationName")));
-                Log.e(addrList.get(i).getAddr(),addrList.get(i).getStationName());
+                LogHelper.e(addrList.get(i).getAddr(),addrList.get(i).getStationName());
             }
         } catch (JSONException e) {
             LogHelper.errorStackTrace(e);
         }
 
-        Log.e("count", ""+addrList.size());
+        LogHelper.e("count", ""+addrList.size());
         adapter = new SearchArrayAdapter<SearchDropdownItem>(context,R.layout.item_dropdown,addrList);
         autoTextView.setAdapter(adapter);
     }

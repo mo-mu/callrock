@@ -39,15 +39,14 @@ public class SplashActivity extends AppCompatActivity {
                 startActivity(new Intent(SplashActivity.this, MainActivity.class));
                 finish();
             }
-        },500);
+        }, 500);
     }
-
 
 
     private void getObserve() {
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        final SharedPreferences preferences =getSharedPreferences("Pref",MODE_PRIVATE);
+        final SharedPreferences preferences = getSharedPreferences("Pref", MODE_PRIVATE);
         final SharedPreferences.Editor editor = preferences.edit();
 
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, CConstants.URL_STATION_INFO, null, new Response.Listener<JSONObject>() {
@@ -57,21 +56,21 @@ public class SplashActivity extends AppCompatActivity {
                     JSONArray jsonObject = response.getJSONArray("list");
                     JSONArray result = new JSONArray();
 
-                    if(jsonObject!=null) {
-                        for(int i = 0; i<jsonObject.length();i++){
+                    if (jsonObject != null) {
+                        for (int i = 0; i < jsonObject.length(); i++) {
                             JSONObject o = jsonObject.getJSONObject(i);
 
                             JSONObject curObs = new JSONObject();
                             curObs.put("addr", o.getString("addr"));
-                            curObs.put("dmX",o.getDouble("dmX"));
-                            curObs.put("dmY",o.getDouble("dmY"));
-                            curObs.put("oper",o.getString("oper"));
+                            curObs.put("dmX", o.getDouble("dmX"));
+                            curObs.put("dmY", o.getDouble("dmY"));
+                            curObs.put("oper", o.getString("oper"));
                             curObs.put("stationName", o.getString("stationName"));
 
                             result.put(curObs);
                         }
 
-                        editor.putString("Observe",result.toString()).apply();
+                        editor.putString("Observe", result.toString()).apply();
                     }
 
                 } catch (JSONException e) {

@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.momu.callrock.item.SearchDropdownItem;
 import com.momu.callrock.R;
+import com.momu.callrock.utility.LogHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +77,7 @@ public class SearchArrayAdapter<S> extends ArrayAdapter<SearchDropdownItem> {
                 FilterResults filterResults = new FilterResults();
                 filterResults.values = suggestions;
                 filterResults.count = suggestions.size();
-                Log.e("adsf", "" + filterResults.count);
+                LogHelper.e("adsf", "" + filterResults.count);
                 return filterResults;
             } else {
                 return new FilterResults();
