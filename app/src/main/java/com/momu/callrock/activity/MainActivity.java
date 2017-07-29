@@ -2,7 +2,6 @@ package com.momu.callrock.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -52,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
         mContext = this;
         initDrawer();
+        getLocationData();
     }
 
     /**
@@ -95,10 +95,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        getLocationData();
     }
 
 
+    /**
+     * 현재 위치정보를 이용하여 서버에서 측정소 정보를 가져온다.
+     *
+     * @param geoPoint 현재 위치정보(TM 좌표)
+     */
     private void getStationList(GeoPoint geoPoint) {
         RequestQueue queue = Volley.newRequestQueue(this);
 

@@ -40,6 +40,7 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(0, 0);
         setContentView(R.layout.activity_search);
         ButterKnife.bind(this);
         context = this;
@@ -69,5 +70,11 @@ public class SearchActivity extends AppCompatActivity {
     @OnClick(R.id.btn_back)
     void btnBackClick() {
         finish();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(0, 0);
     }
 }
