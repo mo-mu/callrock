@@ -34,11 +34,12 @@ import butterknife.OnClick;
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.drawerLayout) DrawerLayout drawerLayout;
     @BindView(R.id.navView) NavigationView navigationView;
+    @BindView(R.id.txt_value_pm10) TextView txtValuePM10;
+    @BindView(R.id.txt_value_pm25) TextView txtValuePM25;
 
     Context mContext;
     double locationX, locationY;
     String nearestStationName = null;
-
 
     private static final String TAG = "MainActivity";
 
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                             public void run() {
                                 try {
                                     LogHelper.e(TAG, jsonArray.getJSONObject(0).toString());
-                                    Toast.makeText(mContext, "가장 가까운 측정소는 " + nearestStationName + " 측정소 입니다.", Toast.LENGTH_LONG).show();
+                                    setPMValueText(jsonArray.getJSONObject(0));
                                 } catch (JSONException e) {
                                     LogHelper.errorStackTrace(e);
                                 }
@@ -170,6 +171,14 @@ public class MainActivity extends AppCompatActivity {
 
             queue.add(jsonRequest);
         }
+    }
+
+    void setPMValueText(JSONObject jsonObject) throws JSONException {
+        String pm10Value = jsonObject.getString("pm10Value");
+        String pm25Value = jsonObject.getString("pm25Value");
+
+        txtValuePM10.setText(pm10Value +" * 기준");
+        txtValuePM25.setText(pm25Value +" * 기준");
     }
 
     /**

@@ -126,10 +126,11 @@
                     android:textStyle="bold"/>
 
                 <TextView
+                    android:id="@+id/txt_value_pm25"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="44*보통"
+                    android:text=""
                     android:textSize="16sp"/>
 
             </LinearLayout>
@@ -152,10 +153,11 @@
                     android:textStyle="bold"/>
 
                 <TextView
+                    android:id="@+id/txt_value_pm10"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="44*보통"
+                    android:text=""
                     android:textSize="16sp"/>
 
             </LinearLayout>
