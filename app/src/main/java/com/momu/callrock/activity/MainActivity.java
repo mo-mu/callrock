@@ -34,7 +34,6 @@ import butterknife.OnClick;
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.drawerLayout) DrawerLayout drawerLayout;
     @BindView(R.id.navView) NavigationView navigationView;
-    @BindView(R.id.txt_main) TextView txtMain;
 
     Context mContext;
     double locationX, locationY;
@@ -150,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 try {
-                                    txtMain.setText(jsonArray.getJSONObject(0).toString());
+                                    LogHelper.e(TAG, jsonArray.getJSONObject(0).toString());
                                     Toast.makeText(mContext, "가장 가까운 측정소는 " + nearestStationName + " 측정소 입니다.", Toast.LENGTH_LONG).show();
                                 } catch (JSONException e) {
                                     LogHelper.errorStackTrace(e);
