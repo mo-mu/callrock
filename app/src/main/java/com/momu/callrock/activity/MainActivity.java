@@ -19,6 +19,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.momu.callrock.R;
 import com.momu.callrock.constant.CConstants;
+import com.momu.callrock.preference.AppPreference;
 import com.momu.callrock.utility.GeoPoint;
 import com.momu.callrock.utility.LogHelper;
 import com.momu.callrock.utility.Utility;
@@ -26,6 +27,10 @@ import com.momu.callrock.utility.Utility;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,11 +41,14 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.navView) NavigationView navigationView;
     @BindView(R.id.txt_value_pm10) TextView txtValuePM10;
     @BindView(R.id.txt_value_pm25) TextView txtValuePM25;
+    @BindView(R.id.txt_time_sync) TextView txtSyncTime;
+    @BindView(R.id.txt_status_main) TextView txtGradeMain;
 
     Context mContext;
     double locationX, locationY;
     String nearestStationName = null;
 
+    int pm10Grade, pm25Grade;
     private static final String TAG = "MainActivity";
 
     @Override
@@ -152,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
                                 try {
                                     LogHelper.e(TAG, jsonArray.getJSONObject(0).toString());
                                     setPMValueText(jsonArray.getJSONObject(0));
-                                } catch (JSONException e) {
+                                } catch (JSONException | ParseException e) {
                                     LogHelper.errorStackTrace(e);
                                 }
                             }
@@ -173,12 +181,35 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    void setPMValueText(JSONObject jsonObject) throws JSONException {
+    void setPMValueText(JSONObject jsonObject) throws JSONException, ParseException {
         String pm10Value = jsonObject.getString("pm10Value");
         String pm25Value = jsonObject.getString("pm25Value");
 
-        txtValuePM10.setText(pm10Value +" * 기준");
-        txtValuePM25.setText(pm25Value +" * 기준");
+        pm10Grade = Utility.pm10Grade(Integer.parseInt(pm10Value), AppPreference.loadIsWhoGrade(mContext));
+        pm25Grade = Utility.pm25Grade(Integer.parseInt(pm25Value), AppPreference.loadIsWhoGrade(mContext));
+
+        txtValuePM10.setText(pm10Value + " * " + Utility.getGradeStr(pm10Grade));
+        txtValuePM25.setText(pm25Value + " * " + Utility.getGradeStr(pm25Grade));
+
+        String dataTime = jsonObject.getString("dataTime");
+
+        final String OLD_FORMAT = "yyyy-MM-dd HH:mm";
+        final String NEW_FORMAT = "HH:mm";
+
+        // August 12, 2010
+        String newDateString;
+
+        SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT);
+        Date d = sdf.parse(dataTime);
+        sdf.applyPattern(NEW_FORMAT);
+        newDateString = sdf.format(d);
+        txtSyncTime.setText(newDateString + " 업데이트됨");
+
+        if(pm10Grade > pm25Grade) {
+            txtGradeMain.setText(Utility.getGradeStr(pm10Grade));
+        } else {
+            txtGradeMain.setText(Utility.getGradeStr(pm25Grade));
+        }
     }
 
     /**
