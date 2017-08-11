@@ -5,6 +5,16 @@ package com.momu.callrock.constant;
  */
 public class CConstants {
     /**
+     * 카카오 지도 좌표정보 변환 REST API url
+     */
+    public static final String URL_KAKAO_GEO_TRANSCOORD = "https://dapi.kakao.com/v2/local/geo/transcoord.json?x=%1$s&y=%2$s&input_coord=WGS84&output_coord=TM";
+
+    /**
+     * 카카오 지도 GM좌표로 주소 불러오는 REST API url
+     */
+    public static final String URL_KAKAO_GEO_COORD2ADDRESS = "https://dapi.kakao.com/v2/local/geo/coord2address.json?x=%1$s&y=%2$s&input_coord=WGS84";
+
+    /**
      * TM 좌표로 가까운 측정소 불러오는 url
      */
     public static final String URL_STATION_LIST_BY_GEO = "http://openapi.airkorea.or.kr/openapi/services/rest/MsrstnInfoInqireSvc/getNearbyMsrstnList?ServiceKey=NCPIDFE%2F7buZ0eIVTd6x6iqFLtZRkGcVW%2FZuKO1g%2BM9cCN8YBQBmPIKzaP%2B9MTfyyNMhXDS3SkK8%2FjiyINYe0A%3D%3D&_returnType=json&ver=1.3&";

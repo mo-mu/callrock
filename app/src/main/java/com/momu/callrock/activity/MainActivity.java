@@ -1,26 +1,37 @@
 package com.momu.callrock.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.momu.callrock.R;
 import com.momu.callrock.constant.CConstants;
 import com.momu.callrock.preference.AppPreference;
-import com.momu.callrock.utility.GeoPoint;
 import com.momu.callrock.utility.LogHelper;
 import com.momu.callrock.utility.Utility;
 
@@ -31,6 +42,8 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,12 +56,20 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.txt_value_pm25) TextView txtValuePM25;
     @BindView(R.id.txt_time_sync) TextView txtSyncTime;
     @BindView(R.id.txt_status_main) TextView txtGradeMain;
+    @BindView(R.id.btn_search) TextView btnSearch;
+    @BindView(R.id.img_cat) ImageView imgMain;
 
     Context mContext;
+
+    private FusedLocationProviderClient mFusedLocationClient;
+
     double locationX, locationY;
     String nearestStationName = null;
 
     int pm10Grade, pm25Grade;
+
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 11;  //위치정보 권한 확인
+
     private static final String TAG = "MainActivity";
 
     @Override
@@ -87,16 +108,58 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
     /**
-     * 위치정보를 받아옴
+     * 현재 위치정보를 받아옴 (권한요청도 함)
      */
     void getLocationData() {
-        locationX = 126.9004613;
-        locationY = 37.5347978;
-        GeoPoint geoPoint = Utility.convertToTM(locationX, locationY);
-        getStationList(geoPoint);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            LogHelper.e(TAG, "위치 권한 주어지지 않음");
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.READ_CONTACTS)) {
+
+                LogHelper.e(TAG, "권한 확인 1");
+
+            } else {
+                LogHelper.e(TAG, "권한 확인 2");
+
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(MainActivity.this
+                        , new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}
+                        , MY_PERMISSIONS_REQUEST_LOCATION);
+                return;
+            }
+
+        } else {    //위치 정보 권한 있음
+            LogHelper.e(TAG, "위치 권한 주어짐");
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                // ...
+                                locationX = location.getLongitude();
+                                locationY = location.getLatitude();
+                                LogHelper.e(TAG, "위치정보 : " + locationX + ", " + locationY);
+//                            locationX = 126.9004613;
+//                            locationY = 37.5347978;
+
+                                getStationList(locationX, locationY);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(this, new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            LogHelper.errorStackTrace(e);
+                        }
+                    });
+        }
     }
 
 
@@ -107,30 +170,55 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * 현재 위치정보를 이용하여 서버에서 측정소 정보를 가져온다.
+     * 위치정보(longitude, latitude)를 이용하여 서버에서 측정소 정보를 가져온다.
      *
-     * @param geoPoint 현재 위치정보(TM 좌표)
+     * @param geoX 위치정보(x좌표, longitude)
+     * @param geoY 위치정보(y좌표, latitude)
      */
-    private void getStationList(GeoPoint geoPoint) {
-        RequestQueue queue = Volley.newRequestQueue(this);
 
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, CConstants.URL_STATION_LIST_BY_GEO + "tmX=" + geoPoint.getX() + "&tmY=" + geoPoint.getY(), null, new Response.Listener<JSONObject>() {
+    private void getStationList(final double geoX, final double geoY) {
+        final RequestQueue queue = Volley.newRequestQueue(this);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, String.format(CConstants.URL_KAKAO_GEO_TRANSCOORD, String.valueOf(geoX), String.valueOf(geoY)), null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    JSONArray jsonArray = response.getJSONArray("list");
+                    JSONArray jsonArray = response.getJSONArray("documents");
                     LogHelper.e(TAG, jsonArray.toString());
+                    double tmX = jsonArray.getJSONObject(0).getDouble("x");
+                    double tmY = jsonArray.getJSONObject(0).getDouble("y");
 
-                    nearestStationName = jsonArray.getJSONObject(0).getString("stationName");
-                    runOnUiThread(new Runnable() {
+                    JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, CConstants.URL_STATION_LIST_BY_GEO + "tmX=" + tmX + "&tmY=" + tmY, null, new Response.Listener<JSONObject>() {
                         @Override
-                        public void run() {
-                            Toast.makeText(mContext, "가장 가까운 측정소는 " + nearestStationName + " 측정소 입니다.", Toast.LENGTH_LONG).show();
-                            getStationDetail();
+                        public void onResponse(JSONObject response) {
+                            try {
+                                JSONArray jsonArray = response.getJSONArray("list");
+                                LogHelper.e(TAG, jsonArray.toString());
+
+                                nearestStationName = jsonArray.getJSONObject(0).getString("stationName");
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(mContext, "가장 가까운 측정소는 " + nearestStationName + " 측정소 입니다.", Toast.LENGTH_LONG).show();
+                                        getStationDetail(nearestStationName);
+                                        getAddressFromCoord(geoX, geoY);
+                                    }
+                                });
+
+                            } catch (JSONException e) {
+                                LogHelper.errorStackTrace(e);
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            LogHelper.e(TAG, "ERROR : " + error.getMessage());
                         }
                     });
+                    queue.add(jsonRequest);
 
-                } catch (JSONException e) {
+
+                } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
                 }
             }
@@ -139,16 +227,25 @@ public class MainActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 LogHelper.e(TAG, "ERROR : " + error.getMessage());
             }
-        });
-
-        queue.add(jsonRequest);
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Authorization", "KakaoAK e8695fade4aae0be4d1609c102af6a8b");
+                return params;
+            }
+        };
+        queue.add(request);
     }
 
-    void getStationDetail() {
-        if (nearestStationName != null) {
+    /**
+     * 측정소 이름으로 환경공단 공공 API에서 측정소에서 측정한 정보를 가져옴.
+     */
+    void getStationDetail(String stationName) {
+        if (stationName != null && !stationName.equals("")) {
             RequestQueue queue = Volley.newRequestQueue(this);
 
-            JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, CConstants.URL_STATION_DETAIL + nearestStationName, null, new Response.Listener<JSONObject>() {
+            JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, CConstants.URL_STATION_DETAIL + stationName, null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     try {
@@ -159,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
                             public void run() {
                                 try {
                                     LogHelper.e(TAG, jsonArray.getJSONObject(0).toString());
-                                    setPMValueText(jsonArray.getJSONObject(0));
+                                    setPMValueUI(jsonArray.getJSONObject(0));
                                 } catch (JSONException | ParseException e) {
                                     LogHelper.errorStackTrace(e);
                                 }
@@ -181,7 +278,51 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    void setPMValueText(JSONObject jsonObject) throws JSONException, ParseException {
+    /**
+     * 카카오 REST_API에서 좌표정보를 지도정보로 변환 후 메인 상단에 보여줌.
+     */
+    void getAddressFromCoord(double geoX, double geoY) {
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, String.format(CConstants.URL_KAKAO_GEO_COORD2ADDRESS, String.valueOf(geoX), String.valueOf(geoY)), null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONArray jsonArray = response.getJSONArray("documents");
+                    LogHelper.e(TAG, jsonArray.toString());
+                    JSONObject addressObject = jsonArray.getJSONObject(0).getJSONObject("address");
+                    btnSearch.setText(addressObject.getString("region_1depth_name") + " " + addressObject.getString("region_2depth_name"));
+
+                } catch (Exception e) {
+                    LogHelper.errorStackTrace(e);
+                    btnSearch.setText("현재 주소 알수없음");
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                LogHelper.e(TAG, "ERROR : " + error.getMessage());
+                btnSearch.setText("현재 주소 알수없음");
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "KakaoAK e8695fade4aae0be4d1609c102af6a8b");
+                return params;
+            }
+        };
+        queue.add(request);
+    }
+
+    /**
+     * 메인화면에 초미세먼지, 미세먼지 관련 UI 업데이트
+     *
+     * @param jsonObject 측정소에서 측정한 미세먼지 정보
+     * @throws JSONException
+     * @throws ParseException
+     */
+    void setPMValueUI(JSONObject jsonObject) throws JSONException, ParseException {
         String pm10Value = jsonObject.getString("pm10Value");
         String pm25Value = jsonObject.getString("pm25Value");
 
@@ -205,11 +346,31 @@ public class MainActivity extends AppCompatActivity {
         newDateString = sdf.format(d);
         txtSyncTime.setText(newDateString + " 업데이트됨");
 
-        if(pm10Grade > pm25Grade) {
-            txtGradeMain.setText(Utility.getGradeStr(pm10Grade));
+        int mainGrade;
+        if (pm10Grade > pm25Grade) {
+            mainGrade = pm10Grade;
+
         } else {
-            txtGradeMain.setText(Utility.getGradeStr(pm25Grade));
+            mainGrade = pm25Grade;
         }
+
+        txtGradeMain.setText(Utility.getGradeStr(mainGrade));
+
+        switch (mainGrade) {
+            case 0:
+                imgMain.setImageResource(R.drawable.status_icon_1);
+                break;
+            case 1:
+                imgMain.setImageResource(R.drawable.status_icon_3);
+                break;
+            case 2:
+                imgMain.setImageResource(R.drawable.status_icon_3);
+                break;
+            case 3:
+                imgMain.setImageResource(R.drawable.status_icon_4);
+                break;
+        }
+
     }
 
     /**
@@ -245,5 +406,29 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 1
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    LogHelper.e(TAG, "권한 확인 3");
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    getLocationData();
+                } else {
+                    LogHelper.e(TAG, "권한 확인 4");
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 }

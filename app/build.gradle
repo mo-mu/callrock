@@ -32,6 +32,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:26.0.0-alpha1'
     compile 'com.android.support:design:26.0.0-alpha1'
 
+    compile 'com.google.android.gms:play-services:11.0.4'
 
     //버터나이프
     compile 'com.jakewharton:butterknife:8.7.0'
