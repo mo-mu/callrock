@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -50,6 +51,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+/**
+ * 메인화
+ */
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.drawerLayout) DrawerLayout drawerLayout;
     @BindView(R.id.navView) NavigationView navigationView;
@@ -117,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
      * 현재 위치정보를 받아옴 (권한요청도 함)
      */
     void getLocationData() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             LogHelper.e(TAG, "위치 권한 주어지지 않음");
             // Should we show an explanation?
@@ -241,6 +245,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 측정소 이름으로 환경공단 공공 API에서 측정소에서 측정한 정보를 가져옴.
+     * @param stationName 측정소 이름
      */
     void getStationDetail(String stationName) {
         if (stationName != null && !stationName.equals("")) {
@@ -281,6 +286,8 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 카카오 REST_API에서 좌표정보를 지도정보로 변환 후 메인 상단에 보여줌.
+     * @param geoX longitude
+     * @param geoY latitude
      */
     void getAddressFromCoord(double geoX, double geoY) {
         RequestQueue queue = Volley.newRequestQueue(this);
