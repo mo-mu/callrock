@@ -11,6 +11,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -325,6 +326,13 @@ public class MainActivity extends AppCompatActivity {
     void setPMValueUI(JSONObject jsonObject) throws JSONException, ParseException {
         String pm10Value = jsonObject.getString("pm10Value");
         String pm25Value = jsonObject.getString("pm25Value");
+
+
+        Log.e("hello",pm25Value+"    "+pm10Value);
+        if(pm25Value.equals("-"))
+            pm25Value = "0";
+        if(pm10Value.equals("-"))
+            pm10Value = "0";
 
         pm10Grade = Utility.pm10Grade(Integer.parseInt(pm10Value), AppPreference.loadIsWhoGrade(mContext));
         pm25Grade = Utility.pm25Grade(Integer.parseInt(pm25Value), AppPreference.loadIsWhoGrade(mContext));
