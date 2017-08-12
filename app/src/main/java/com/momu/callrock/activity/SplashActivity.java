@@ -2,10 +2,13 @@ package com.momu.callrock.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -14,12 +17,17 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.momu.callrock.R;
+import com.momu.callrock.config.CConfig;
 import com.momu.callrock.constant.CConstants;
+import com.momu.callrock.sql.SQLiteHelper;
 import com.momu.callrock.utility.LogHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * 스플레시 페이지
@@ -29,20 +37,32 @@ public class SplashActivity extends AppCompatActivity {
 
     private static final String TAG = "SplashActivity";
 
+    @BindView(R.id.txtTitle) TextView txtTitle;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        ButterKnife.bind(this);
+
+        SQLiteHelper sqLiteHelper = new SQLiteHelper(getApplicationContext(),"whole_city.db",null,1);
+        try{
+         sqLiteHelper.setInitData();
+        }catch (Exception e){
+            System.err.print(e.toString());
+        }
+
+        Typeface typeFace1 = Typeface.createFromAsset(getAssets(), CConfig.FONT_NANUM_MYEONGJO);
+        txtTitle.setTypeface(typeFace1);
 
         getObserve();
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//
-////                startActivity(new Intent(SplashActivity.this, MainActivity.class));
-////                finish();
-//            }
-//        }, 500);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                finish();
+            }
+        }, 500);
     }
 
 
@@ -81,8 +101,8 @@ public class SplashActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                finish();
+        //        startActivity(new Intent(SplashActivity.this, MainActivity.class));
+         //       finish();
             }
         }, new Response.ErrorListener() {
             @Override
