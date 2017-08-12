@@ -7,13 +7,17 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.momu.callrock.adapter.SearchArrayAdapter;
 import com.momu.callrock.item.SearchDropdownItem;
 import com.momu.callrock.R;
+import com.momu.callrock.sql.SQLiteHelper;
 import com.momu.callrock.utility.LogHelper;
 
 import org.json.JSONArray;
@@ -32,7 +36,6 @@ import butterknife.OnClick;
 public class SearchActivity extends AppCompatActivity {
     Context context;
     ArrayList<SearchDropdownItem> addrList = new ArrayList<>();
-    ;
     ArrayAdapter adapter;
 
     @BindView(R.id.autoTextView) AutoCompleteTextView autoTextView;
@@ -45,23 +48,26 @@ public class SearchActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         context = this;
 
-        SharedPreferences prefs = getSharedPreferences("Pref", MODE_PRIVATE);
-        String text = prefs.getString("Observe", "");
 
-        try {
-            JSONArray jsonArray = new JSONArray(text);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                LogHelper.e("" + i + " : ", jsonArray.getJSONObject(i).getString("addr"));
-                addrList.add(new SearchDropdownItem(jsonArray.getJSONObject(i).getString("addr"), jsonArray.getJSONObject(i).getString("stationName")));
-                LogHelper.e(addrList.get(i).getAddr(), addrList.get(i).getStationName());
-            }
-        } catch (JSONException e) {
-            LogHelper.errorStackTrace(e);
-        }
+        SQLiteHelper sqLiteHelper = new SQLiteHelper(getApplicationContext(),"whole_city.db",null,1);
+
+        for(int i = 0; i<sqLiteHelper.getWholeAddress().size();i++)
+            addrList.add(new SearchDropdownItem(sqLiteHelper.getWholeAddress().get(i),i));
 
         LogHelper.e("count", "" + addrList.size());
         adapter = new SearchArrayAdapter<SearchDropdownItem>(context, R.layout.item_dropdown, addrList);
         autoTextView.setAdapter(adapter);
+        autoTextView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(context, ""+((TextView)view).getText().toString(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     /**

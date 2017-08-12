@@ -5,19 +5,20 @@ package com.momu.callrock.item;
  */
 
 public class SearchDropdownItem {
-    String addr, stationName;
-
+    String addr;
+    int id;
     public String getAddr() {
         return addr;
     }
 
-    public String getStationName() {
-        return stationName;
+
+    public int getId() {
+        return id;
     }
 
-    public SearchDropdownItem(String a, String s){
+    public SearchDropdownItem(String a, int i){
         this.addr = a;
-        this.stationName = s;
+        this.id = i;
     }
 }
 
