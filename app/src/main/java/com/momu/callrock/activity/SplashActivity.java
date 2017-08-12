@@ -44,12 +44,6 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
 
-        SQLiteHelper sqLiteHelper = new SQLiteHelper(getApplicationContext(),"whole_city.db",null,1);
-        try{
-         sqLiteHelper.setInitData();
-        }catch (Exception e){
-            System.err.print(e.toString());
-        }
 
         Typeface typeFace1 = Typeface.createFromAsset(getAssets(), CConfig.FONT_NANUM_MYEONGJO);
         txtTitle.setTypeface(typeFace1);

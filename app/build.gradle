@@ -39,4 +39,6 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.7.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.7.0'
     compile 'com.android.support:multidex:1.0.1'
+
+    compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
 }

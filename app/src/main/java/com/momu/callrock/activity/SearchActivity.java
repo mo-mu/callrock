@@ -1,29 +1,19 @@
 package com.momu.callrock.activity;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.momu.callrock.adapter.SearchArrayAdapter;
-import com.momu.callrock.item.SearchDropdownItem;
 import com.momu.callrock.R;
-import com.momu.callrock.sql.SQLiteHelper;
+import com.momu.callrock.sql.DatabaseAccess;
 import com.momu.callrock.utility.LogHelper;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,8 +25,7 @@ import butterknife.OnClick;
  */
 public class SearchActivity extends AppCompatActivity {
     Context context;
-    ArrayList<SearchDropdownItem> addrList = new ArrayList<>();
-    ArrayAdapter adapter;
+    List<String> addrList = new ArrayList<>();
 
     @BindView(R.id.autoTextView) AutoCompleteTextView autoTextView;
 
@@ -49,25 +38,21 @@ public class SearchActivity extends AppCompatActivity {
         context = this;
 
 
-        SQLiteHelper sqLiteHelper = new SQLiteHelper(getApplicationContext(),"whole_city.db",null,1);
+        try {
+            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(context);
+            databaseAccess.open();
+            addrList = databaseAccess.getWholeAddress();
 
-        for(int i = 0; i<sqLiteHelper.getWholeAddress().size();i++)
-            addrList.add(new SearchDropdownItem(sqLiteHelper.getWholeAddress().get(i),i));
+            LogHelper.e("count", "" + addrList.size());
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                    android.R.layout.simple_dropdown_item_1line, addrList);
 
-        LogHelper.e("count", "" + addrList.size());
-        adapter = new SearchArrayAdapter<SearchDropdownItem>(context, R.layout.item_dropdown, addrList);
-        autoTextView.setAdapter(adapter);
-        autoTextView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(context, ""+((TextView)view).getText().toString(), Toast.LENGTH_SHORT).show();
-            }
+            autoTextView.setAdapter(adapter);
+            databaseAccess.close();
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+        }catch (Exception e){
+            Log.e(e.getMessage()," : "+e.getLocalizedMessage());
+        }
     }
 
     /**

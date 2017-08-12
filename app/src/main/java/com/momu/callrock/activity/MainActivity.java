@@ -12,6 +12,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -57,8 +58,10 @@ import butterknife.OnClick;
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.drawerLayout) DrawerLayout drawerLayout;
     @BindView(R.id.navView) NavigationView navigationView;
+    @BindView(R.id.txt_value_pm10_degree) TextView txtValuePM10Degree;
     @BindView(R.id.txt_value_pm10) TextView txtValuePM10;
     @BindView(R.id.txt_value_pm25) TextView txtValuePM25;
+    @BindView(R.id.txt_value_pm25_degree) TextView txtValuePM25Degree;
     @BindView(R.id.txt_time_sync) TextView txtSyncTime;
     @BindView(R.id.txt_status_main) TextView txtGradeMain;
     @BindView(R.id.btn_search) TextView btnSearch;
@@ -299,18 +302,18 @@ public class MainActivity extends AppCompatActivity {
                     JSONArray jsonArray = response.getJSONArray("documents");
                     LogHelper.e(TAG, jsonArray.toString());
                     JSONObject addressObject = jsonArray.getJSONObject(0).getJSONObject("address");
-                    btnSearch.setText(addressObject.getString("region_1depth_name") + " " + addressObject.getString("region_2depth_name"));
+                    btnSearch.setText(Html.fromHtml("<u>" + addressObject.getString("region_1depth_name") + " " + addressObject.getString("region_2depth_name") + "</u>"));
 
                 } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
-                    btnSearch.setText("현재 주소 알수없음");
+                    btnSearch.setText(Html.fromHtml("<u>" + "현재 주소 알수없음" + "</u>"));
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 LogHelper.e(TAG, "ERROR : " + error.getMessage());
-                btnSearch.setText("현재 주소 알수없음");
+                btnSearch.setText(Html.fromHtml("<u>" + "현재 주소 알수없음" + "</u>"));
             }
         }) {
             @Override
@@ -344,8 +347,11 @@ public class MainActivity extends AppCompatActivity {
         pm10Grade = Utility.pm10Grade(Integer.parseInt(pm10Value), AppPreference.loadIsWhoGrade(mContext));
         pm25Grade = Utility.pm25Grade(Integer.parseInt(pm25Value), AppPreference.loadIsWhoGrade(mContext));
 
-        txtValuePM10.setText(pm10Value + " * " + Utility.getGradeStr(pm10Grade));
-        txtValuePM25.setText(pm25Value + " * " + Utility.getGradeStr(pm25Grade));
+        txtValuePM10Degree.setText(pm10Value);
+        txtValuePM10.setText(Utility.getGradeStr(pm10Grade));
+        txtValuePM25Degree.setText(pm25Value);
+        txtValuePM25.setText(Utility.getGradeStr(pm25Grade));
+
 
         String dataTime = jsonObject.getString("dataTime");
 
@@ -376,7 +382,7 @@ public class MainActivity extends AppCompatActivity {
                 imgMain.setImageResource(R.drawable.status_icon_1);
                 break;
             case 1:
-                imgMain.setImageResource(R.drawable.status_icon_3);
+                imgMain.setImageResource(R.drawable.status_icon_2);
                 break;
             case 2:
                 imgMain.setImageResource(R.drawable.status_icon_3);
