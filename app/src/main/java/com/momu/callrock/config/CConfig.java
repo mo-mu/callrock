@@ -6,4 +6,5 @@ package com.momu.callrock.config;
 
 public class CConfig {
     public static final String FONT_NANUM_MYEONGJO = "fonts/NanumMyeongjoExtraBold.otf";
+    public static final String FONT_NANUM_SQUAR = "fonts/NANUMSQUARER.TTF";
 }
