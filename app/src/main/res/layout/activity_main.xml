@@ -12,51 +12,58 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <FrameLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp">
 
             <ImageView
                 android:id="@+id/btn_refresh"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_gravity="left|center"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
                 android:padding="12dp"
                 android:src="@drawable/refresh_btn"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:orientation="vertical">
+                android:layout_centerHorizontal="true"
+                android:orientation="vertical"
+                android:paddingBottom="12dp"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:paddingTop="24dp">
 
                 <TextView
                     android:id="@+id/btn_search"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="서울 신사동"
-                    android:textSize="22sp"
+                    android:layout_gravity="center_horizontal"
                     android:layout_marginBottom="3dp"
+                    android:text="측정소 위치"
+                    android:textSize="22sp"
                     android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/txt_time_sync"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
                     android:text="9:00 업데이트됨"/>
-
-
             </LinearLayout>
 
             <ImageView
+
                 android:id="@+id/btn_setting"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_gravity="right|center"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
                 android:padding="12dp"
                 android:src="@drawable/setting_btn"/>
-        </FrameLayout>
+        </RelativeLayout>
 
 
         <ImageView
@@ -74,7 +81,7 @@
             android:layout_gravity="center"
             android:layout_marginBottom="12dp"
             android:layout_marginTop="8dp"
-            android:text="좋음"
+            android:text=""
             android:textSize="20sp"
             android:textStyle="bold"/>
 
@@ -138,18 +145,21 @@
                         android:layout_height="wrap_content"
                         android:text=""
                         android:textSize="16sp"/>
+
                     <ImageView
+                        android:id="@+id/img_dot25"
                         android:layout_width="7dp"
                         android:layout_height="7dp"
-                        android:src="@drawable/square_1_img"
                         android:layout_gravity="center"
                         android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"/>
+                        android:layout_marginRight="5dp"
+                        android:src="@drawable/square_1_img"/>
 
                     <TextView
                         android:id="@+id/txt_value_pm25"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
                         android:text=""
                         android:textSize="16sp"/>
                 </LinearLayout>
@@ -179,6 +189,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/txt_value_pm10_degree"
                         android:layout_width="wrap_content"
@@ -187,19 +198,22 @@
                         android:textSize="16sp"/>
 
                     <ImageView
+                        android:id="@+id/img_dot10"
                         android:layout_width="7dp"
                         android:layout_height="7dp"
-                        android:src="@drawable/square_1_img"
                         android:layout_gravity="center"
                         android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"/>
+                        android:layout_marginRight="5dp"
+                        android:src="@drawable/square_1_img"/>
+
                     <TextView
                         android:id="@+id/txt_value_pm10"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
                         android:text=""
                         android:textSize="16sp"/>
-                 </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
 
@@ -308,6 +322,7 @@
                     android:textStyle="bold"/>
 
                 <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/switch_who"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"

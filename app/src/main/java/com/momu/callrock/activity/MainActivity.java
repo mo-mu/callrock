@@ -12,10 +12,11 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.text.Html;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +29,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -53,7 +53,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
- * 메인화
+ * 메인화면
  */
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.drawerLayout) DrawerLayout drawerLayout;
@@ -66,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.txt_status_main) TextView txtGradeMain;
     @BindView(R.id.btn_search) TextView btnSearch;
     @BindView(R.id.img_cat) ImageView imgMain;
+    @BindView(R.id.img_dot10) ImageView imgDot10;
+    @BindView(R.id.img_dot25) ImageView imgDot25;
+    @BindView(R.id.switch_who) SwitchCompat switchWho;     //WHO기준 여부 스위치
 
     Context mContext;
 
@@ -78,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 11;  //위치정보 권한 확인
 
+    JSONObject stationDetailObject = null;      //측정소에서 측정한 미세먼지 정보
+
     private static final String TAG = "MainActivity";
 
     @Override
@@ -88,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
         mContext = this;
         initDrawer();
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         getLocationData();
     }
 
@@ -117,7 +123,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        if (AppPreference.loadIsWhoGrade(mContext)) {
+            switchWho.setChecked(true);
+        } else {
+            switchWho.setChecked(false);
+        }
+
+        switchWho.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    LogHelper.e(TAG, "onCheckedChanged, true");
+                    AppPreference.saveIsWhoGrade(mContext, true);
+                } else {
+                    LogHelper.e(TAG, "onCheckedChanged, false");
+                    AppPreference.saveIsWhoGrade(mContext, false);
+                }
+
+                try {
+                    setPMValueUI();
+                } catch (Exception e) {
+                    LogHelper.errorStackTrace(e);
+                }
+            }
+        });
     }
 
     /**
@@ -248,6 +277,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 측정소 이름으로 환경공단 공공 API에서 측정소에서 측정한 정보를 가져옴.
+     *
      * @param stationName 측정소 이름
      */
     void getStationDetail(String stationName) {
@@ -265,7 +295,8 @@ public class MainActivity extends AppCompatActivity {
                             public void run() {
                                 try {
                                     LogHelper.e(TAG, jsonArray.getJSONObject(0).toString());
-                                    setPMValueUI(jsonArray.getJSONObject(0));
+                                    stationDetailObject = jsonArray.getJSONObject(0);
+                                    setPMValueUI();
                                 } catch (JSONException | ParseException e) {
                                     LogHelper.errorStackTrace(e);
                                 }
@@ -289,6 +320,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 카카오 REST_API에서 좌표정보를 지도정보로 변환 후 메인 상단에 보여줌.
+     *
      * @param geoX longitude
      * @param geoY latitude
      */
@@ -329,31 +361,46 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 메인화면에 초미세먼지, 미세먼지 관련 UI 업데이트
      *
-     * @param jsonObject 측정소에서 측정한 미세먼지 정보
      * @throws JSONException
      * @throws ParseException
      */
-    void setPMValueUI(JSONObject jsonObject) throws JSONException, ParseException {
-        String pm10Value = jsonObject.getString("pm10Value");
-        String pm25Value = jsonObject.getString("pm25Value");
+    void setPMValueUI() throws JSONException, ParseException {
+        if (stationDetailObject == null) return;
 
+        String pm10Value = stationDetailObject.getString("pm10Value");
+        String pm25Value = stationDetailObject.getString("pm25Value");
 
-        Log.e("hello",pm25Value+"    "+pm10Value);
-        if(pm25Value.equals("-"))
-            pm25Value = "0";
-        if(pm10Value.equals("-"))
-            pm10Value = "0";
+        if (pm25Value.equals("-"))
+            pm25Value = "-1";
+
+        if (pm10Value.equals("-"))
+            pm10Value = "-1";
 
         pm10Grade = Utility.pm10Grade(Integer.parseInt(pm10Value), AppPreference.loadIsWhoGrade(mContext));
         pm25Grade = Utility.pm25Grade(Integer.parseInt(pm25Value), AppPreference.loadIsWhoGrade(mContext));
 
-        txtValuePM10Degree.setText(pm10Value);
+        if (pm10Grade == -1) {        //측정값 없을 경우
+            txtValuePM10Degree.setText("");
+            imgDot10.setVisibility(View.GONE);
+        } else {
+            txtValuePM10Degree.setText(pm10Value);
+            imgDot10.setVisibility(View.VISIBLE);
+        }
+
         txtValuePM10.setText(Utility.getGradeStr(pm10Grade));
-        txtValuePM25Degree.setText(pm25Value);
+
+        if (pm25Grade == -1) {         //측정값 없을 경우
+            txtValuePM25Degree.setText("");
+            imgDot25.setVisibility(View.GONE);
+        } else {
+            txtValuePM25Degree.setText(pm25Value);
+            imgDot25.setVisibility(View.VISIBLE);
+        }
+
         txtValuePM25.setText(Utility.getGradeStr(pm25Grade));
 
 
-        String dataTime = jsonObject.getString("dataTime");
+        String dataTime = stationDetailObject.getString("dataTime");
 
         final String OLD_FORMAT = "yyyy-MM-dd HH:mm";
         final String NEW_FORMAT = "HH:mm";
@@ -365,9 +412,9 @@ public class MainActivity extends AppCompatActivity {
         Date d = sdf.parse(dataTime);
         sdf.applyPattern(NEW_FORMAT);
         newDateString = sdf.format(d);
-        txtSyncTime.setText(newDateString + " 업데이트됨");
+        txtSyncTime.setText(newDateString + " 기준 측정값");
 
-        int mainGrade;
+        int mainGrade;  //메인페이지에 표시할 기준 등급, 높은 등급을 기준으로 보여준다.
         if (pm10Grade > pm25Grade) {
             mainGrade = pm10Grade;
 

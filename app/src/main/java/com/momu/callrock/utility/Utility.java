@@ -14,6 +14,8 @@ public class Utility {
      * @return pm10 미세먼지 등급
      */
     public static int pm10Grade(int aqi, boolean isWhoGrade) {
+        if(aqi == -1) return -1;        //측정값 없음
+
         if (isWhoGrade) {
             if (aqi < 31) {
                 return 0;
@@ -45,6 +47,7 @@ public class Utility {
      * @return pm25 미세먼지 등급
      */
     public static int pm25Grade(int aqi, boolean isWhoGrade) {
+        if(aqi == -1) return -1;         //측정값 없음
         if (isWhoGrade) {
             if (aqi < 16) {
                 return 0;
