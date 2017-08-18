@@ -18,6 +18,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.img_dot10) ImageView imgDot10;
     @BindView(R.id.img_dot25) ImageView imgDot25;
     @BindView(R.id.switch_who) SwitchCompat switchWho;     //WHO기준 여부 스위치
+    @BindView(R.id.layout_table_who) LinearLayout layoutWho;
+    @BindView(R.id.layout_table_korea) LinearLayout layoutKorea;
 
     Context mContext;
 
@@ -125,8 +128,13 @@ public class MainActivity extends AppCompatActivity {
 
         if (AppPreference.loadIsWhoGrade(mContext)) {
             switchWho.setChecked(true);
+            layoutKorea.setVisibility(View.GONE);
+            layoutWho.setVisibility(View.VISIBLE);
+
         } else {
             switchWho.setChecked(false);
+            layoutWho.setVisibility(View.GONE);
+            layoutKorea.setVisibility(View.VISIBLE);
         }
 
         switchWho.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -135,9 +143,14 @@ public class MainActivity extends AppCompatActivity {
                 if (b) {
                     LogHelper.e(TAG, "onCheckedChanged, true");
                     AppPreference.saveIsWhoGrade(mContext, true);
+                    layoutKorea.setVisibility(View.GONE);
+                    layoutWho.setVisibility(View.VISIBLE);
+
                 } else {
                     LogHelper.e(TAG, "onCheckedChanged, false");
                     AppPreference.saveIsWhoGrade(mContext, false);
+                    layoutWho.setVisibility(View.GONE);
+                    layoutKorea.setVisibility(View.VISIBLE);
                 }
 
                 try {
@@ -334,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
                     JSONArray jsonArray = response.getJSONArray("documents");
                     LogHelper.e(TAG, jsonArray.toString());
                     JSONObject addressObject = jsonArray.getJSONObject(0).getJSONObject("address");
-                    btnSearch.setText(Html.fromHtml("<u>" + addressObject.getString("region_1depth_name") + " " + addressObject.getString("region_2depth_name") + "</u>"));
+                    btnSearch.setText(Html.fromHtml("<font color=\"#323232\"><u>" + addressObject.getString("region_1depth_name") + " " + addressObject.getString("region_2depth_name") + "</font></u>"));
 
                 } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
