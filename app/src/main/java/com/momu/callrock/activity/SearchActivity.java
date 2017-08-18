@@ -1,6 +1,7 @@
 package com.momu.callrock.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,9 +12,11 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,11 +42,11 @@ public class SearchActivity extends AppCompatActivity {
     List<String> addrList;
     List<String> currentList = null;
 
-    @BindView(R.id.autoTextView) AutoCompleteTextView autoTextView;
-//    @BindView(R.id.recyclerView) RecyclerView recyclerView;
+    @BindView(R.id.editText) EditText editText;
+    @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
-    //    RecyclerView.LayoutManager layoutManager;
-//    ArrayList<SearchItem> items = new ArrayList<>();
+    RecyclerView.LayoutManager layoutManager;
+    ArrayList<SearchItem> items = new ArrayList<>();
     DatabaseAccess databaseAccess;
     ArrayAdapter<String> adapter;
 
@@ -58,49 +61,26 @@ public class SearchActivity extends AppCompatActivity {
         context = this;
 
         getInitAddrDB();
-//        init();
+        init();
 
-        autoTextView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        editText.setOnKeyListener(new View.OnKeyListener() {
             @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_ACTION_SEARCH) {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_ENTER){
                     btnSearchClick();
-                    return true;
                 }
                 return false;
             }
         });
-
-        autoTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
-                LogHelper.e(TAG, arg0.getItemAtPosition(position).toString());
-                Toast.makeText(SearchActivity.this, "선택한 주소는 " + arg0.getItemAtPosition(position).toString() + " 입니다. 이 주소로 좌표를 검색한 다음 해당 좌표로 서버에 검색을 때린 다음 SearchActivity를 닫는 것이 좋을 것 같네요. ", Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            autoTextView.setOnDismissListener(new AutoCompleteTextView.OnDismissListener() {
-                @Override
-                public void onDismiss() {
-                    if(currentList != null) {
-                        currentList.clear();
-                        adapter.notifyDataSetChanged();
-                    }
-                }
-            });
-        }
     }
 
     /**
      * 페이지 초기화
      */
     private void init() {
-//        recyclerView.setHasFixedSize(true);
-//        layoutManager = new LinearLayoutManager(context);
-//        recyclerView.setLayoutManager(layoutManager);
-//        items.add(new SearchItem(0, "adsf", 0, 0));
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(context);
+        recyclerView.setLayoutManager(layoutManager);
     }
 
     /**
@@ -136,27 +116,20 @@ public class SearchActivity extends AppCompatActivity {
      */
     @OnClick(R.id.btn_search)
     void btnSearchClick() {
-        if (adapter != null) {
-            currentList = addrList;
-            autoTextView.setAdapter(adapter);
-        }
-        if (autoTextView.isPopupShowing()) {
-            LogHelper.e(TAG, "popup  showing");
-        } else {
-            LogHelper.e(TAG, "popup not showing");
-            autoTextView.showDropDown();
-        }
-
         try {
-//            databaseAccess = DatabaseAccess.getInstance(context);
-//            databaseAccess.open();
-//
-//            items = databaseAccess.getSearchAddress(autoTextView.getText().toString());
-//
-//            SearchAdapter searchAdapter = new SearchAdapter(getApplicationContext(),items);
-//            recyclerView.setAdapter(searchAdapter);
-//
-//             databaseAccess.close();
+            databaseAccess = DatabaseAccess.getInstance(context);
+            databaseAccess.open();
+
+            items = databaseAccess.getSearchAddress(editText.getText().toString());
+
+            SearchAdapter searchAdapter = new SearchAdapter(SearchActivity.this,items);
+            recyclerView.setAdapter(searchAdapter);
+
+             databaseAccess.close();
+
+            editText.clearFocus();
+            InputMethodManager in = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            in.hideSoftInputFromWindow(editText.getWindowToken(), 0);
         } catch (Exception e) {
             LogHelper.errorStackTrace(e);
         }
