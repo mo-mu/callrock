@@ -519,7 +519,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == CConfig.SEARCH_LOCATION && resultCode == CConfig.SELECT_ITEM){
-            Toast.makeText(mContext, ""+data.getStringExtra("address")+"  "+data.getDoubleExtra("x",-1)+"  "+data.getDoubleExtra("y",-1), Toast.LENGTH_SHORT).show();
+            getStationList(data.getDoubleExtra("x",-1),data.getDoubleExtra("y",-1));
         }
     }
 }
