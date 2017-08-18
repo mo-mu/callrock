@@ -18,8 +18,8 @@
             android:padding="12dp"
             android:src="@drawable/ic_back_black"/>
 
-        <android.support.v7.widget.AppCompatAutoCompleteTextView
-            android:id="@+id/autoTextView"
+        <EditText
+            android:id="@+id/editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -27,6 +27,7 @@
             android:layout_marginRight="50dp"
             android:imeOptions="actionSearch"
             android:inputType="text"
+            android:hint="동 / 읍 / 면을 입력하세요."
             android:maxLines="1"/>
 
         <ImageView
@@ -38,10 +39,10 @@
             android:src="@drawable/ic_search_black"/>
     </FrameLayout>
 
-    <!--<android.support.v7.widget.RecyclerView-->
-    <!--android:id="@+id/recyclerView"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"/>-->
+    <android.support.v7.widget.RecyclerView
+    android:id="@+id/recyclerView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"/>
 
 
 </LinearLayout>

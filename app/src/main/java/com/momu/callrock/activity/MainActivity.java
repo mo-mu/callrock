@@ -34,6 +34,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.momu.callrock.R;
+import com.momu.callrock.config.CConfig;
 import com.momu.callrock.constant.CConstants;
 import com.momu.callrock.preference.AppPreference;
 import com.momu.callrock.utility.LogHelper;
@@ -459,7 +460,8 @@ public class MainActivity extends AppCompatActivity {
      */
     @OnClick(R.id.btn_search)
     void btnSearchClick() {
-        startActivity(new Intent(MainActivity.this, SearchActivity.class));
+        Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+        startActivityForResult(intent, CConfig.SEARCH_LOCATION);
     }
 
     /**
@@ -510,6 +512,14 @@ public class MainActivity extends AppCompatActivity {
 
             // other 'case' lines to check for other
             // permissions this app might request
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == CConfig.SEARCH_LOCATION && resultCode == CConfig.SELECT_ITEM){
+            Toast.makeText(mContext, ""+data.getStringExtra("address")+"  "+data.getDoubleExtra("x",-1)+"  "+data.getDoubleExtra("y",-1), Toast.LENGTH_SHORT).show();
         }
     }
 }
