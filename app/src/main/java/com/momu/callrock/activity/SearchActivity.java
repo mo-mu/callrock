@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +45,7 @@ public class SearchActivity extends AppCompatActivity {
 
     @BindView(R.id.editText) EditText editText;
     @BindView(R.id.recyclerView) RecyclerView recyclerView;
+    @BindView(R.id.view_nothing) FrameLayout nothingView;
 
     RecyclerView.LayoutManager layoutManager;
     ArrayList<SearchItem> items = new ArrayList<>();
@@ -116,22 +118,33 @@ public class SearchActivity extends AppCompatActivity {
      */
     @OnClick(R.id.btn_search)
     void btnSearchClick() {
-        try {
-            databaseAccess = DatabaseAccess.getInstance(context);
-            databaseAccess.open();
+        if(!editText.getText().toString().equals("")) { //editText에 1글자라도 있을 때
+            try {
+                databaseAccess = DatabaseAccess.getInstance(context);
+                databaseAccess.open();
 
-            items = databaseAccess.getSearchAddress(editText.getText().toString());
+                items = databaseAccess.getSearchAddress(editText.getText().toString());
 
-            SearchAdapter searchAdapter = new SearchAdapter(SearchActivity.this,items);
-            recyclerView.setAdapter(searchAdapter);
+                if (items.size() > 0) {
+                    SearchAdapter searchAdapter = new SearchAdapter(SearchActivity.this, items);
+                    recyclerView.setAdapter(searchAdapter);
+                    nothingView.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                } else {
+                    recyclerView.setVisibility(View.GONE);
+                    nothingView.setVisibility(View.VISIBLE);
+                }
+                databaseAccess.close();
 
-             databaseAccess.close();
-
-            editText.clearFocus();
-            InputMethodManager in = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-            in.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-        } catch (Exception e) {
-            LogHelper.errorStackTrace(e);
+                editText.clearFocus();
+                InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                in.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+            } catch (Exception e) {
+                LogHelper.errorStackTrace(e);
+            }
+        }else{  //editText에 글자가 없을 때
+            recyclerView.setVisibility(View.GONE);
+            nothingView.setVisibility(View.VISIBLE);
         }
     }
 
