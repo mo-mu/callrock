@@ -1,5 +1,7 @@
 package com.momu.callrock.utility;
 
+import java.util.Calendar;
+
 /**
  * 유틸리티
  * Created by knulps on 2017. 7. 1..
@@ -14,7 +16,7 @@ public class Utility {
      * @return pm10 미세먼지 등급
      */
     public static int pm10Grade(int aqi, boolean isWhoGrade) {
-        if(aqi == -1) return -1;        //측정값 없음
+        if (aqi == -1) return -1;        //측정값 없음
 
         if (isWhoGrade) {
             if (aqi < 31) {
@@ -47,7 +49,7 @@ public class Utility {
      * @return pm25 미세먼지 등급
      */
     public static int pm25Grade(int aqi, boolean isWhoGrade) {
-        if(aqi == -1) return -1;         //측정값 없음
+        if (aqi == -1) return -1;         //측정값 없음
         if (isWhoGrade) {
             if (aqi < 16) {
                 return 0;
@@ -73,11 +75,12 @@ public class Utility {
 
     /**
      * 등급 별 해당 표기 문자 리턴
+     *
      * @param grade 등급
      * @return 등급 표기
      */
     public static String getGradeStr(int grade) {
-        switch(grade) {
+        switch (grade) {
             case 0:
                 return "좋음";
             case 1:
@@ -100,5 +103,24 @@ public class Utility {
     public static GeoPoint convertToTM(Double x, Double y) {
         return GeoTrans.convert(GeoTrans.GEO, GeoTrans.TM, new GeoPoint(x, y));
 //        txtResult.setText("변환 결과 : " + (int)resultPoint.getX() + ", " + (int)resultPoint.getY());
+    }
+
+    /**
+     * timemillis 시간을 Date format으로 변환
+     *
+     * @param timeMillis 시간
+     * @return 변환된 시간
+     */
+    public static String getTimeFormatFromMillis(long timeMillis) {
+        if (timeMillis == 0) return "";
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMillis);
+
+        int mYear = calendar.get(Calendar.YEAR);
+        int mMonth = calendar.get(Calendar.MONTH);
+        int mDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        return mYear + "년 " + mMonth + "월 " + mDay;
     }
 }

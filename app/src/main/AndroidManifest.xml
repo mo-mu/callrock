@@ -31,6 +31,19 @@
             android:name=".activity.SearchActivity"
             android:configChanges="orientation"
             android:windowSoftInputMode="stateVisible"/>
+
+        <receiver
+            android:name=".WidgetProvider"
+            android:label="위젯 테스트" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_provider_basic" />
+        </receiver>
+
     </application>
 
 </manifest>

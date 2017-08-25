@@ -294,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param stationName 측정소 이름
      */
-    void getStationDetail(String stationName) {
+    void getStationDetail(final String stationName) {
         if (stationName != null && !stationName.equals("")) {
             RequestQueue queue = Volley.newRequestQueue(this);
 
@@ -307,6 +307,8 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                AppPreference.saveLastMeasureStation(mContext, stationName);      //측정소명 저장
+                                AppPreference.saveLastMeasureTime(mContext, System.currentTimeMillis());  //측정한 시간 저장
                                 try {
                                     LogHelper.e(TAG, jsonArray.getJSONObject(0).toString());
                                     stationDetailObject = jsonArray.getJSONObject(0);
@@ -348,8 +350,9 @@ public class MainActivity extends AppCompatActivity {
                     JSONArray jsonArray = response.getJSONArray("documents");
                     LogHelper.e(TAG, jsonArray.toString());
                     JSONObject addressObject = jsonArray.getJSONObject(0).getJSONObject("address");
-                    btnSearch.setText(Html.fromHtml("<font color=\"#323232\"><u>" + addressObject.getString("region_1depth_name") + " " + addressObject.getString("region_2depth_name") + "</font></u>"));
-
+                    String strAddress =  addressObject.getString("region_1depth_name") + " " + addressObject.getString("region_2depth_name");
+                    btnSearch.setText(Html.fromHtml("<font color=\"#323232\"><u>" + strAddress + "</font></u>"));
+                    AppPreference.saveLastMeasureAddr(mContext, strAddress);
                 } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
                     btnSearch.setText(Html.fromHtml("<u>" + "현재 주소 알수없음" + "</u>"));
@@ -440,16 +443,16 @@ public class MainActivity extends AppCompatActivity {
 
         switch (mainGrade) {
             case 0:
-                imgMain.setImageResource(R.drawable.status_icon_1);
+                imgMain.setImageResource(R.drawable.ic_status_1);
                 break;
             case 1:
-                imgMain.setImageResource(R.drawable.status_icon_2);
+                imgMain.setImageResource(R.drawable.ic_status_2);
                 break;
             case 2:
-                imgMain.setImageResource(R.drawable.status_icon_3);
+                imgMain.setImageResource(R.drawable.ic_status_3);
                 break;
             case 3:
-                imgMain.setImageResource(R.drawable.status_icon_4);
+                imgMain.setImageResource(R.drawable.ic_status_4);
                 break;
         }
 
@@ -518,8 +521,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == CConfig.SEARCH_LOCATION && resultCode == CConfig.SELECT_ITEM){
-            getStationList(data.getDoubleExtra("x",-1),data.getDoubleExtra("y",-1));
+        if (requestCode == CConfig.SEARCH_LOCATION && resultCode == CConfig.SELECT_ITEM) {
+            getStationList(data.getDoubleExtra("x", -1), data.getDoubleExtra("y", -1));
         }
     }
 }
