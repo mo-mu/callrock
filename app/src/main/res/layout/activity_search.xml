@@ -31,7 +31,7 @@
             android:maxLines="1"/>
 
         <ImageView
-            android:id="@+id/btn_search"
+            android:id="@+id/btn_refresh"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="right|center"

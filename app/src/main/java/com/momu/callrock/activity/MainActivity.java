@@ -2,6 +2,7 @@ package com.momu.callrock.activity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -36,6 +37,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.momu.callrock.R;
 import com.momu.callrock.config.CConfig;
 import com.momu.callrock.constant.CConstants;
+import com.momu.callrock.item.SearchDialog;
 import com.momu.callrock.preference.AppPreference;
 import com.momu.callrock.utility.LogHelper;
 import com.momu.callrock.utility.Utility;
@@ -54,6 +56,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
+
 /**
  * 메인화면
  */
@@ -66,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.txt_value_pm25_degree) TextView txtValuePM25Degree;
     @BindView(R.id.txt_time_sync) TextView txtSyncTime;
     @BindView(R.id.txt_status_main) TextView txtGradeMain;
-    @BindView(R.id.btn_search) TextView btnSearch;
+    @BindView(R.id.btn_refresh) TextView btnRefresh;
     @BindView(R.id.img_cat) ImageView imgMain;
     @BindView(R.id.img_dot10) ImageView imgDot10;
     @BindView(R.id.img_dot25) ImageView imgDot25;
@@ -93,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Fabric.with(this, new Crashlytics());
         ButterKnife.bind(this);
 
         mContext = this;
@@ -166,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 현재 위치정보를 받아옴 (권한요청도 함)
      */
-    void getLocationData() {
+    public void getLocationData() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             LogHelper.e(TAG, "위치 권한 주어지지 않음");
@@ -351,18 +357,18 @@ public class MainActivity extends AppCompatActivity {
                     LogHelper.e(TAG, jsonArray.toString());
                     JSONObject addressObject = jsonArray.getJSONObject(0).getJSONObject("address");
                     String strAddress =  addressObject.getString("region_1depth_name") + " " + addressObject.getString("region_2depth_name");
-                    btnSearch.setText(Html.fromHtml("<font color=\"#323232\"><u>" + strAddress + "</font></u>"));
+                    btnRefresh.setText(Html.fromHtml("<font color=\"#323232\"><u>" + strAddress + "</font></u>"));
                     AppPreference.saveLastMeasureAddr(mContext, strAddress);
                 } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
-                    btnSearch.setText(Html.fromHtml("<u>" + "현재 주소 알수없음" + "</u>"));
+                    btnRefresh.setText(Html.fromHtml("<u>" + "현재 주소 알수없음" + "</u>"));
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 LogHelper.e(TAG, "ERROR : " + error.getMessage());
-                btnSearch.setText(Html.fromHtml("<u>" + "현재 주소 알수없음" + "</u>"));
+                btnRefresh.setText(Html.fromHtml("<u>" + "현재 주소 알수없음" + "</u>"));
             }
         }) {
             @Override
@@ -461,18 +467,30 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 검색 버튼 클릭 이벤트
      */
-    @OnClick(R.id.btn_search)
+    @OnClick(R.id.btn_refresh)
     void btnSearchClick() {
-        Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-        startActivityForResult(intent, CConfig.SEARCH_LOCATION);
+        getLocationData();
     }
 
     /**
      * 새로고침 버튼 클릭 이벤트
      */
-    @OnClick(R.id.btn_refresh)
+    @OnClick(R.id.btn_search)
     void btnRefreshClick() {
-        getLocationData();
+        SearchDialog mDialog = new SearchDialog(this);
+        mDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+
+            }
+        });
+        mDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+
+            }
+        });
+        mDialog.show();
     }
 
     /**
@@ -524,5 +542,10 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == CConfig.SEARCH_LOCATION && resultCode == CConfig.SELECT_ITEM) {
             getStationList(data.getDoubleExtra("x", -1), data.getDoubleExtra("y", -1));
         }
+    }
+
+    public void sendSearch(){
+        Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+        startActivityForResult(intent, CConfig.SEARCH_LOCATION);
     }
 }

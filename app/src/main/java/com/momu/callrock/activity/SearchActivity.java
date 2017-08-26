@@ -1,25 +1,17 @@
 package com.momu.callrock.activity;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.momu.callrock.R;
 import com.momu.callrock.adapter.SearchAdapter;
@@ -116,7 +108,7 @@ public class SearchActivity extends AppCompatActivity {
     /**
      * 검색 버튼 클릭 이벤트
      */
-    @OnClick(R.id.btn_search)
+    @OnClick(R.id.btn_refresh)
     void btnSearchClick() {
         if(!editText.getText().toString().equals("")) { //editText에 1글자라도 있을 때
             try {

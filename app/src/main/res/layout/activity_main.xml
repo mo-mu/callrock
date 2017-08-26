@@ -18,14 +18,14 @@
             android:layout_marginBottom="40dp">
 
             <ImageView
-                android:id="@+id/btn_refresh"
+                android:id="@+id/btn_search"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:padding="16dp"
 
-                android:src="@drawable/refresh_btn"/>
+                android:src="@drawable/location_btn"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -38,7 +38,7 @@
                 android:paddingTop="16dp">
 
                 <TextView
-                    android:id="@+id/btn_search"
+                    android:id="@+id/btn_refresh"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -310,8 +310,9 @@
             android:paddingRight="24dp"
             android:paddingTop="36dp">
 
-            <RelativeLayout
+            <FrameLayout
                 android:layout_width="match_parent"
+                android:layout_gravity="center"
                 android:layout_height="50dp">
 
                 <TextView
@@ -325,15 +326,16 @@
 
                 <android.support.v7.widget.SwitchCompat
                     android:id="@+id/switch_who"
-                    android:layout_width="50dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"/>
-            </RelativeLayout>
+                    android:layout_gravity="right"/>
+            </FrameLayout>
 
-            <RelativeLayout
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp">
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -343,10 +345,11 @@
                     android:text="위치 추가하기"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
-            </RelativeLayout>
+            </FrameLayout>
 
-            <RelativeLayout
+            <FrameLayout
                 android:layout_width="match_parent"
+                android:layout_gravity="center"
                 android:layout_height="50dp">
 
                 <TextView
@@ -361,105 +364,182 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
+                    android:layout_gravity="right"
                     android:text="1.0"
                     android:textSize="16sp"/>
-            </RelativeLayout>
+            </FrameLayout>
 
-            <LinearLayout
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginTop="25dp"
+                android:layout_marginBottom="25dp"/>
+
+           <LinearLayout
                 android:id="@+id/layout_table_korea"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:gravity="center"
                 android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:gravity="left"
-                    android:text="미세먼지"
-                    android:textSize="16sp"
-                    android:textStyle="bold"/>
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginBottom="15dp"
+                   android:gravity="left"
+                   android:text="미세먼지"
+                   android:textSize="16sp"
+                   android:textStyle="bold"/>
 
                 <LinearLayout
-                    android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
+                    android:orientation="vertical">
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="0\n31\n81\n151"/>
-
-                    <TextView
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp">
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="7dp"
+                            android:src="@drawable/navi_blue"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 ~ 30 좋음"/>
+                    </LinearLayout>
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:gravity="center"
-                        android:text="~\n~\n~\n~"/>
-
-                    <TextView
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp">
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="7dp"
+                            android:src="@drawable/navi_green"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="31 ~ 30 보통"/>
+                    </LinearLayout>
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:gravity="center"
-                        android:text="30\n80\n150\n"/>
-
-                    <TextView
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp">
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="7dp"
+                            android:src="@drawable/navi_yellow"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="81 ~ 150 나쁨"/>
+                    </LinearLayout>
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="좋음\n보통\n나쁨\n매우나쁨"/>
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp">
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="7dp"
+                            android:src="@drawable/navi_red"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="151 ~  매우나쁨"/>
+                    </LinearLayout>
+
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="25dp"
                     android:gravity="left"
                     android:text="초미세먼지"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
 
                 <LinearLayout
-                    android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="0\n16\n51\n101"/>
-
-                    <TextView
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp">
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="7dp"
+                            android:src="@drawable/navi_blue"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 ~ 15 좋음"/>
+                    </LinearLayout>
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:gravity="center"
-                        android:text="~\n~\n~\n~"/>
-
-                    <TextView
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp">
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="7dp"
+                            android:src="@drawable/navi_green"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="16 ~ 50 보통"/>
+                    </LinearLayout>
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:gravity="center"
-                        android:text="15\n50\n100\n"/>
-
-                    <TextView
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp">
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="7dp"
+                            android:src="@drawable/navi_yellow"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="51 ~ 100 나쁨"/>
+                    </LinearLayout>
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="좋음\n보통\n나쁨\n매우나쁨"/>
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="7dp"
+                            android:src="@drawable/navi_red"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="101 ~  매우나쁨"/>
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 
@@ -467,96 +547,168 @@
                 android:id="@+id/layout_table_who"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginBottom="15dp"
                     android:gravity="left"
                     android:text="미세먼지"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
-
                 <LinearLayout
-                    android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="0\n31\n51\n101"/>
-
-                    <TextView
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp">
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="7dp"
+                            android:src="@drawable/navi_blue"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 ~ 30 좋음"/>
+                    </LinearLayout>
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:gravity="center"
-                        android:text="~\n~\n~\n~"/>
-
-                    <TextView
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp">
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="7dp"
+                            android:src="@drawable/navi_green"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="31 ~ 50 보통"/>
+                    </LinearLayout>
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:gravity="center"
-                        android:text="30\n50\n100\n"/>
-
-                    <TextView
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp">
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="7dp"
+                            android:src="@drawable/navi_yellow"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="51 ~ 100 나쁨"/>
+                    </LinearLayout>
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="좋음\n보통\n나쁨\n매우나쁨"/>
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp">
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="7dp"
+                            android:src="@drawable/navi_red"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="101 ~  매우나쁨"/>
+                    </LinearLayout>
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="25dp"
                     android:gravity="left"
                     android:text="초미세먼지"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
 
                 <LinearLayout
-                    android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="0\n16\n26\n51"/>
-
-                    <TextView
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp">
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="7dp"
+                            android:src="@drawable/navi_blue"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 ~ 15 좋음"/>
+                    </LinearLayout>
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:gravity="center"
-                        android:text="~\n~\n~\n~"/>
-
-                    <TextView
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp">
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="7dp"
+                            android:src="@drawable/navi_green"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="16 ~ 25 보통"/>
+                    </LinearLayout>
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:gravity="center"
-                        android:text="15\n25\n50\n"/>
-
-                    <TextView
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp">
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="7dp"
+                            android:src="@drawable/navi_yellow"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="26 ~ 50 나쁨"/>
+                    </LinearLayout>
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="좋음\n보통\n나쁨\n매우나쁨"/>
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp">
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="7dp"
+                            android:src="@drawable/navi_red"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="51 ~  매우나쁨"/>
+                    </LinearLayout>
+
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
