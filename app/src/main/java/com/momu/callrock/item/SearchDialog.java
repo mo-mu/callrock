@@ -52,6 +52,7 @@ public class SearchDialog extends Dialog {
     @OnClick(R.id.btn_current)
     void onCurrentClick(){
         ((MainActivity)context).getLocationData();
+        ((MainActivity)context).isSearch = false;
         dismiss();
     }
 }

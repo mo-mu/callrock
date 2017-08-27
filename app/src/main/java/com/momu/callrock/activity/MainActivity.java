@@ -99,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+    public boolean isSearch = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -489,7 +491,10 @@ public class MainActivity extends AppCompatActivity {
      */
     @OnClick(R.id.btn_refresh)
     void btnSearchClick() {
-        getLocationData();
+        if(!isSearch)           //메인페이지에서 현재 주소 찾을 때
+           getLocationData();
+        else  //검색 하여 찾을 때
+            getStationList(locationX,locationY);
     }
 
     /**
@@ -560,7 +565,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CConstants.SEARCH_LOCATION && resultCode == CConstants.SELECT_ITEM) {
-            getStationList(data.getDoubleExtra("x", -1), data.getDoubleExtra("y", -1));
+            locationX = data.getDoubleExtra("x",-1);
+            locationY = data.getDoubleExtra("y",-1);
+            getStationList(locationX,locationY);
+            isSearch = true;
         }
     }
 
