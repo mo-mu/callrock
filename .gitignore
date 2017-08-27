@@ -13,6 +13,9 @@ out/
 build/
 
 .idea/
+.idea/copyright
+.idea/libraries
 
 
 
+gradle/

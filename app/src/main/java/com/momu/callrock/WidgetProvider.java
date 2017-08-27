@@ -56,7 +56,9 @@ public class WidgetProvider extends AppWidgetProvider {
         LogHelper.e(TAG, "updateAppWidget 진입");
         RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.layout_widget);
         updateViews.setTextViewText(R.id.txt_address_widget, AppPreference.loadLastMeasureAddr(context));
-        updateViews.setTextViewText(R.id.txt_time_sync_widget, Utility.getTimeFormatFromMillis(AppPreference.loadLastMeasureTime(context)));
+        updateViews.setTextViewText(R.id.txt_status_main, "보통");
+        updateViews.setTextViewText(R.id.txt_recommend, "그냥~그냥 쏘쏘한 날이에요");
+        //updateViews.setTextViewText(R.id.txt_time_sync_widget, Utility.getTimeFormatFromMillis(AppPreference.loadLastMeasureTime(context)));
 
 
         /**

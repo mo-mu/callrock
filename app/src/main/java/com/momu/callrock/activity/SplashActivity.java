@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
@@ -20,7 +19,6 @@ import com.crashlytics.android.Crashlytics;
 import com.momu.callrock.R;
 import com.momu.callrock.config.CConfig;
 import com.momu.callrock.constant.CConstants;
-import com.momu.callrock.sql.SQLiteHelper;
 import com.momu.callrock.utility.LogHelper;
 
 import io.fabric.sdk.android.Fabric;

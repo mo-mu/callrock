@@ -7,6 +7,10 @@
                                         android:background="@color/white"
                                         android:orientation="vertical">
 
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -32,28 +36,52 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:orientation="vertical"
+                android:gravity="center"
                 android:paddingBottom="12dp"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
                 android:paddingTop="16dp">
 
-                <TextView
-                    android:id="@+id/btn_refresh"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="3dp"
-                    android:text="측정소 위치"
-                    android:textColor="@color/black"
-                    android:textSize="22sp"
-                    android:textStyle="bold"/>
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/txt_time_sync"
+                    <TextView
+                        android:id="@+id/btn_refresh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="3dp"
+                        android:text="측정소 위치"
+                        android:textColor="@color/black"
+                        android:textSize="22sp"
+                        android:textStyle="bold"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0.8dp"
+                        android:background="@color/textColor"/>
+                </LinearLayout>
+
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="9:00 업데이트됨"/>
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/refresh_btn"
+                        android:layout_marginRight="5dp"/>
+                    <TextView
+                        android:id="@+id/txt_time_sync"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="9:00 업데이트됨"/>
+
+                </LinearLayout>
             </LinearLayout>
 
             <ImageView
@@ -106,9 +134,10 @@
             android:layout_marginTop="5dp"
             android:background="#aaaaaa"/>
 
-        <RelativeLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:weightSum="2"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp">
 
@@ -116,108 +145,113 @@
                 android:id="@+id/img_center"
                 android:layout_width="10dp"
                 android:layout_height="25dp"
-                android:layout_centerInParent="true"
+                android:layout_gravity="center"
                 android:src="@drawable/square_3_img"/>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="20dp"
-                android:layout_toLeftOf="@id/img_center"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="초미세먼지"
-                    android:textSize="16sp"
-                    android:textStyle="bold"/>
-
+                android:orientation="horizontal"
+                android:weightSum="2">
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/txt_value_pm25_degree"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text=""
-                        android:textSize="16sp"/>
+                        android:text="초미세먼지"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
 
-                    <ImageView
-                        android:id="@+id/img_dot25"
-                        android:layout_width="7dp"
-                        android:layout_height="7dp"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:src="@drawable/square_1_img"/>
-
-                    <TextView
-                        android:id="@+id/txt_value_pm25"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text=""
-                        android:textSize="16sp"/>
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/txt_value_pm25_degree"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textSize="16sp"/>
+
+                        <ImageView
+                            android:id="@+id/img_dot25"
+                            android:layout_width="7dp"
+                            android:layout_height="7dp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:src="@drawable/square_1_img"/>
+
+                        <TextView
+                            android:id="@+id/txt_value_pm25"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text=""
+                            android:textSize="16sp"/>
+                    </LinearLayout>
+
                 </LinearLayout>
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="20dp"
-                android:layout_toRightOf="@id/img_center"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="미세먼지"
-                    android:textSize="16sp"
-                    android:textStyle="bold"/>
 
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_toRightOf="@id/img_center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/txt_value_pm10_degree"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text=""
-                        android:textSize="16sp"/>
+                        android:text="미세먼지"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
 
-                    <ImageView
-                        android:id="@+id/img_dot10"
-                        android:layout_width="7dp"
-                        android:layout_height="7dp"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:src="@drawable/square_1_img"/>
 
-                    <TextView
-                        android:id="@+id/txt_value_pm10"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text=""
-                        android:textSize="16sp"/>
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/txt_value_pm10_degree"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textSize="16sp"/>
+
+                        <ImageView
+                            android:id="@+id/img_dot10"
+                            android:layout_width="7dp"
+                            android:layout_height="7dp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:src="@drawable/square_1_img"/>
+
+                        <TextView
+                            android:id="@+id/txt_value_pm10"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text=""
+                            android:textSize="16sp"/>
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-        </RelativeLayout>
+        </FrameLayout>
 
         <View
             android:layout_width="match_parent"
@@ -241,13 +275,20 @@
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:src="@drawable/img_walk_main"/>
+                android:src="@drawable/icon_mask" />
+
+            <ImageView
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:src="@drawable/square_1_img" />
 
             <TextView
+                android:id="@+id/txt_mask"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp"
-                android:text="오늘은 마음껏 산책하세요."/>
+                android:text="오늘은 마음껏 산책하세요." />
         </LinearLayout>
 
         <LinearLayout
@@ -262,12 +303,19 @@
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:src="@drawable/img_mask_main"/>
+                android:src="@drawable/icon_tree"/>
 
+
+            <ImageView
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:src="@drawable/square_1_img"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"/>
             <TextView
+                android:id="@+id/txt_activity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp"
                 android:text="오늘은 마스크는 필요없겠어요."/>
         </LinearLayout>
 
@@ -283,16 +331,61 @@
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:src="@drawable/img_house_main"/>
+                android:src="@drawable/icon_water"/>
+
+
+            <ImageView
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:src="@drawable/square_1_img"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"/>
 
             <TextView
+                android:id="@+id/txt_life"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp"
                 android:text="밖으로 고고고"/>
         </LinearLayout>
-    </LinearLayout>
+            <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingBottom="5dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:paddingTop="5dp">
 
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/icon_window"/>
+
+
+                <ImageView
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:src="@drawable/square_1_img"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"/>
+            <TextView
+                android:id="@+id/txt_window"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="밖으로 고고고"/>
+        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="12dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="15dp"
+            android:text= "&quot;미세한&quot;은 한국환경공단(에어코리아)의\n 실시간 관측 데이터 자료를 활용하고 있습니다."/>
+
+    </LinearLayout>
+    </ScrollView>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navView"
@@ -318,8 +411,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
                     android:text="WHO 기준"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
@@ -340,8 +431,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
                     android:text="위치 추가하기"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
@@ -355,8 +444,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
                     android:text="앱버전 "
                     android:textSize="16sp"
                     android:textStyle="bold"/>

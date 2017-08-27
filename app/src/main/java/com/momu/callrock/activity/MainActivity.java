@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,7 +15,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
-import android.text.Html;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -78,6 +78,11 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.switch_who) SwitchCompat switchWho;     //WHO기준 여부 스위치
     @BindView(R.id.layout_table_who) LinearLayout layoutWho;
     @BindView(R.id.layout_table_korea) LinearLayout layoutKorea;
+    @BindView(R.id.txt_recommend) TextView txtRecommend;
+    @BindView(R.id.txt_mask) TextView txtMask;
+    @BindView(R.id.txt_activity) TextView txtActivity;
+    @BindView(R.id.txt_life) TextView txtLife;
+    @BindView(R.id.txt_window) TextView txtWindow;
 
     Context mContext;
 
@@ -102,9 +107,17 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         mContext = this;
+        init();
         initDrawer();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         getLocationData();
+    }
+
+    private void init() {
+        Typeface typeFace1 = Typeface.createFromAsset(getAssets(), CConfig.FONT_NANUM_MYEONGJO);
+        txtGradeMain.setTypeface(typeFace1);
+        btnRefresh.setTypeface(typeFace1);
+
     }
 
     /**
@@ -357,18 +370,18 @@ public class MainActivity extends AppCompatActivity {
                     LogHelper.e(TAG, jsonArray.toString());
                     JSONObject addressObject = jsonArray.getJSONObject(0).getJSONObject("address");
                     String strAddress =  addressObject.getString("region_1depth_name") + " " + addressObject.getString("region_2depth_name");
-                    btnRefresh.setText(Html.fromHtml("<font color=\"#323232\"><u>" + strAddress + "</font></u>"));
+                    btnRefresh.setText(strAddress );
                     AppPreference.saveLastMeasureAddr(mContext, strAddress);
                 } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
-                    btnRefresh.setText(Html.fromHtml("<u>" + "현재 주소 알수없음" + "</u>"));
+                    btnRefresh.setText("현재 주소 알수없음");
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 LogHelper.e(TAG, "ERROR : " + error.getMessage());
-                btnRefresh.setText(Html.fromHtml("<u>" + "현재 주소 알수없음" + "</u>"));
+                btnRefresh.setText("현재 주소 알수없음");
             }
         }) {
             @Override
@@ -435,7 +448,7 @@ public class MainActivity extends AppCompatActivity {
         Date d = sdf.parse(dataTime);
         sdf.applyPattern(NEW_FORMAT);
         newDateString = sdf.format(d);
-        txtSyncTime.setText(newDateString + " 기준 측정값");
+        txtSyncTime.setText(newDateString + "업데이트됨");
 
         int mainGrade;  //메인페이지에 표시할 기준 등급, 높은 등급을 기준으로 보여준다.
         if (pm10Grade > pm25Grade) {
@@ -446,6 +459,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         txtGradeMain.setText(Utility.getGradeStr(mainGrade));
+
+        txtRecommend.setText(CConstants.wholeTexts[mainGrade]);
+        txtMask.setText(CConstants.maskTexts[mainGrade]);
+        txtActivity.setText(CConstants.activityTexts[mainGrade]);
+        txtLife.setText(CConstants.lifeTexts[mainGrade]);
+        txtWindow.setText(CConstants.windowTexts[mainGrade]);
+
 
         switch (mainGrade) {
             case 0:
