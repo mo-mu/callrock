@@ -45,4 +45,40 @@ public class CConstants {
      * 미세먼지 기준, 매우 나쁨
      */
     public static final int GRADE_WORST = 3;
+
+    /**
+     * main에서 search페이지로 request 할 때 값
+     */
+    public static final int SEARCH_LOCATION = 1001;
+
+    /**
+     * search에서 main으로 result 값을 던져줄 때 값
+     */
+    public static final int SELECT_ITEM = 2001;
+
+
+    /**
+     * 통합 문구
+     */
+    public static final String [] wholeTexts = {"마음껏 외출하세요~!","그냥~그냥 쏘쏘한 날이에요","무리한 야외활동 금지!","매우 나쁜 상태! 마스크 꼭 챙겨요!"};
+    /**
+     * 마스크 문구
+     */
+    public static final String [] maskTexts = {"마스크가 필요없는 날이에요","호흡기가 민감하면, 마스크를 쓰세요","마스크를 껴주세요","마스크를 꼭! 껴주세요"};
+
+    /**
+     * 활동 문구
+     */
+    public static final String [] activityTexts = {"야외활동 하기 좋은 날!","민감군은 장시간 또는 무리한 실외 활동을 자제하세요","실외활동 및 외출을 자제하세요","실외활동 및 외출을 자제하세요"};
+
+    /**
+     * 생활 문구
+     */
+    public static final String [] lifeTexts = {"저기압엔 고기앞으로...","물이나 비타민 C가 많은 과일/야채를 섭취해보세요","혹시 외출 했다면, 깨끗이 씻어주세요","혹시 외출 했다면, 깨끗이 씻어주세요"};
+
+    /**
+     * 환기 문구
+     */
+    public static final String [] windowTexts = {"창문을 활짝 열어 환기해요","환기를 되도록 자제해주세요","환기는 최대 1분 내외로 해주세요","창문을 꽁꽁 닫아주세요"};
+
 }
