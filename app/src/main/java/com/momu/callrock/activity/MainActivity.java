@@ -559,13 +559,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CConfig.SEARCH_LOCATION && resultCode == CConfig.SELECT_ITEM) {
+        if (requestCode == CConstants.SEARCH_LOCATION && resultCode == CConstants.SELECT_ITEM) {
             getStationList(data.getDoubleExtra("x", -1), data.getDoubleExtra("y", -1));
         }
     }
 
     public void sendSearch(){
         Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-        startActivityForResult(intent, CConfig.SEARCH_LOCATION);
+        startActivityForResult(intent, CConstants.SEARCH_LOCATION);
     }
 }
