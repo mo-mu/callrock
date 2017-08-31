@@ -371,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
                     JSONArray jsonArray = response.getJSONArray("documents");
                     LogHelper.e(TAG, jsonArray.toString());
                     JSONObject addressObject = jsonArray.getJSONObject(0).getJSONObject("address");
-                    String strAddress =  addressObject.getString("region_1depth_name") + " " + addressObject.getString("region_2depth_name");
+                    String strAddress =  addressObject.getString("region_2depth_name") + " " + addressObject.getString("region_3depth_name");
                     btnRefresh.setText(strAddress );
                     AppPreference.saveLastMeasureAddr(mContext, strAddress);
                 } catch (Exception e) {
