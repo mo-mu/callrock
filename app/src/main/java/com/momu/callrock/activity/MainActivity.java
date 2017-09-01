@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -453,6 +454,7 @@ public class MainActivity extends AppCompatActivity {
         txtSyncTime.setText(newDateString + "업데이트됨");
 
         int mainGrade;  //메인페이지에 표시할 기준 등급, 높은 등급을 기준으로 보여준다.
+
         if (pm10Grade > pm25Grade) {
             mainGrade = pm10Grade;
 
@@ -462,11 +464,11 @@ public class MainActivity extends AppCompatActivity {
 
         txtGradeMain.setText(Utility.getGradeStr(mainGrade));
 
-        txtRecommend.setText(CConstants.wholeTexts[mainGrade]);
-        txtMask.setText(CConstants.maskTexts[mainGrade]);
-        txtActivity.setText(CConstants.activityTexts[mainGrade]);
-        txtLife.setText(CConstants.lifeTexts[mainGrade]);
-        txtWindow.setText(CConstants.windowTexts[mainGrade]);
+        txtRecommend.setText(Utility.getWholeStr(mainGrade));
+        txtMask.setText(Utility.getMaskStr(mainGrade));
+        txtActivity.setText(Utility.getActivityStr(mainGrade));
+        txtLife.setText(Utility.getLifeStr(mainGrade));
+        txtWindow.setText(Utility.getWindowStr(mainGrade));
 
 
         switch (mainGrade) {

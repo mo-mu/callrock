@@ -123,4 +123,104 @@ public class Utility {
 
         return mYear + "년 " + mMonth + "월 " + mDay;
     }
+
+    /**
+     * 메인 중앙 문구 리턴
+     * @param grade 등급
+     * @return
+     */
+    public static String getWholeStr(int grade) {
+        switch (grade){
+            case 0:
+                return "마음껏 외출하세요~!";
+            case 1:
+                return "그냥~그냥 쏘쏘한 날이에요";
+            case 2:
+                return "무리한 야외활동 금지!";
+            case 3:
+                return "매우 나쁜 상태! 마스크 꼭 챙겨요!";
+            default:
+                return "알 수 없음";
+        }
+    }
+
+    /**
+     * 마스크 관련 문구 리턴
+     * @param grade 등급
+     * @return
+     */
+    public static String getMaskStr(int grade) {
+        switch (grade){
+            case 0:
+                return "마스크가 필요없는 날이에요";
+            case 1:
+                return "호흡기가 민감하면, 마스크를 쓰세요";
+            case 2:
+                return "마스크를 껴주세요";
+            case 3:
+                return "마스크를 꼭! 껴주세요";
+            default:
+                return "알 수 없음";
+        }
+    }
+
+    /**
+     * 활동관련 문구 리턴
+     * @param grade 등급
+     * @return
+     */
+    public static String getActivityStr(int grade) {
+        switch (grade){
+            case 0:
+                return "야외활동 하기 좋은 날!";
+            case 1:
+                return "민감군은 장시간 또는 무리한 실외 활동을 자제하세요";
+            case 2:
+                return "실외활동 및 외출을 자제하세요";
+            case 3:
+                return "실외활동 및 외출을 자제하세요";
+            default:
+                return "알 수 없음";
+        }
+    }
+
+    /**
+     * 생활 관련 문구 리턴
+     * @param grade 등급
+     * @return
+     */
+    public static String getLifeStr(int grade) {
+        switch (grade){
+            case 0:
+                return "밖에서 운동 어떨까요";
+            case 1:
+                return "물이나 비타민 C가 많은 과일/야채를 섭취해보세요";
+            case 2:
+                return "혹시 외출 했다면, 깨끗이 씻어주세요";
+            case 3:
+                return "혹시 외출 했다면, 깨끗이 씻어주세요";
+            default:
+                return "알 수 없음";
+        }
+    }
+
+    /**
+     * 환기 관련 문구 리턴
+     * @param grade 등급
+     * @return
+     */
+    public static String getWindowStr(int grade) {
+        switch (grade){
+            case 0:
+                return "창문을 활짝 열어 환기해요";
+            case 1:
+                return "환기를 되도록 자제해주세요";
+            case 2:
+                return "환기는 최대 1분 내외로 해주세요";
+            case 3:
+                return "창문을 꽁꽁 닫아주세요";
+            default:
+                return "알 수 없음";
+        }
+    }
 }
