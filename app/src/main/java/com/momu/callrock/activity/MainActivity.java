@@ -15,7 +15,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -31,6 +30,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -56,14 +56,13 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
 
 /**
  * 메인화면
  */
 public class MainActivity extends AppCompatActivity {
+
     @BindView(R.id.drawerLayout) DrawerLayout drawerLayout;
     @BindView(R.id.navView) NavigationView navigationView;
     @BindView(R.id.txt_value_pm10_degree) TextView txtValuePM10Degree;
@@ -96,11 +95,11 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 11;  //위치정보 권한 확인
 
-    JSONObject stationDetailObject = null;      //측정소에서 측정한 미세먼지 정보
+//    JSONObject stationDetailObject = null;      //측정소에서 측정한 미세먼지 정보
 
     private static final String TAG = "MainActivity";
 
-    public boolean isSearch = false;
+//    public boolean isSearch = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,17 +109,54 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         mContext = this;
-        init();
+        initView();
         initDrawer();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        getLocationData();
+
+
+        if (AppPreference.loadIsUseSearchedStation(mContext) && !AppPreference.loadLastMeasureStation(mContext).equals("")) {       //검색한 위치 이용하는 경우
+            if (Utility.shouldRefreshDetail(mContext)) {         //최근 갱신한 시간을 불러와서 갱신할지 여부 확인
+                LogHelper.e(TAG, "측정할 시간이 되어 서버에서 갱신, 최근 측정 시간 : " + AppPreference.loadLastMeasureTime(mContext));
+
+                try {
+                    JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(mContext));
+                    getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"));
+                } catch (Exception e) {
+                    LogHelper.errorStackTrace(e);
+                }
+
+            } else {
+                LogHelper.e(TAG, "측정할 시간이 되지 않아 서버에서 갱신하지 않음, 최근 측정 시간 : " + AppPreference.loadLastMeasureTime(mContext));
+            }
+
+        } else {
+            LogHelper.e(TAG, "위치정보를 이용하여 측정함");
+            // TODO: 2017. 9. 8. 위치정보를 이용하는 측정소가 변경될 수 있으므로 시간 확인을 어떻게 할지 생각이 필요하다.
+            // TODO 측정소명까지만 무조건 확인하고, 직전의 측정소랑 다를 경우에는 시간이 넘어가지 않더라도 getStationDetail 함수를 호출하는 방식이 좋을 것 같음.
+            // TODO 일단은 위치정보 이용시 시간 상관없이 무조건 서버에서 값을 갱신하도록 해 놓았다.
+            getLocationData();
+        }
+
     }
 
-    private void init() {
+    /**
+     * 레이아웃 초기화
+     */
+    private void initView() {
+        //글꼴 초기화
         Typeface typeFace1 = Typeface.createFromAsset(getAssets(), CConfig.FONT_NANUM_MYEONGJO);
         txtGradeMain.setTypeface(typeFace1);
         btnRefresh.setTypeface(typeFace1);
 
+        //측정값 등 초기화
+        try {
+            if (!AppPreference.loadLastMeasureDetail(mContext).equals("")) {
+                setPMValueUI();
+            }
+
+        } catch (Exception e) {
+            LogHelper.errorStackTrace(e);
+        }
     }
 
     /**
@@ -257,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(JSONObject response) {
                 try {
                     JSONArray jsonArray = response.getJSONArray("documents");
-                    LogHelper.e(TAG, jsonArray.toString());
+                    LogHelper.e(TAG, "getStationList : " + jsonArray.toString());
                     double tmX = jsonArray.getJSONObject(0).getDouble("x");
                     double tmY = jsonArray.getJSONObject(0).getDouble("y");
 
@@ -266,14 +302,14 @@ public class MainActivity extends AppCompatActivity {
                         public void onResponse(JSONObject response) {
                             try {
                                 JSONArray jsonArray = response.getJSONArray("list");
-                                LogHelper.e(TAG, jsonArray.toString());
+                                LogHelper.e(TAG, "URL_STATION_LIST_BY_GEO : " + jsonArray.toString());
 
                                 nearestStationName = jsonArray.getJSONObject(0).getString("stationName");
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(mContext, "가장 가까운 측정소는 " + nearestStationName + " 측정소 입니다.", Toast.LENGTH_LONG).show();
-                                        getStationDetail(nearestStationName);
+//                                        Toast.makeText(mContext, "가장 가까운 측정소는 " + nearestStationName + " 측정소 입니다.", Toast.LENGTH_LONG).show();
+//                                        getStationDetail(nearestStationName);
                                         getAddressFromCoord(geoX, geoY);
                                     }
                                 });
@@ -316,7 +352,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param stationName 측정소 이름
      */
-    void getStationDetail(final String stationName) {
+    void getStationDetail(final String stationName, final String strAddress) {
         if (stationName != null && !stationName.equals("")) {
             RequestQueue queue = Volley.newRequestQueue(this);
 
@@ -325,30 +361,44 @@ public class MainActivity extends AppCompatActivity {
                 public void onResponse(JSONObject response) {
                     try {
                         final JSONArray jsonArray = response.getJSONArray("list");
-                        LogHelper.e(TAG, jsonArray.toString());
+                        LogHelper.e(TAG, "URL_STATION_DETAIL ARRAY : " + jsonArray.toString());
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                AppPreference.saveLastMeasureStation(mContext, stationName);      //측정소명 저장
-                                AppPreference.saveLastMeasureTime(mContext, System.currentTimeMillis());  //측정한 시간 저장
                                 try {
-                                    LogHelper.e(TAG, jsonArray.getJSONObject(0).toString());
-                                    stationDetailObject = jsonArray.getJSONObject(0);
-                                    setPMValueUI();
+                                    JSONObject lastMeasurePlaceObject = new JSONObject();
+                                    lastMeasurePlaceObject.put("stationName", stationName);
+                                    lastMeasurePlaceObject.put("measureAddr", strAddress);
+                                    AppPreference.saveLastMeasurePlace(mContext, lastMeasurePlaceObject.toString());      //측정소명, 측정 주소 저장
+
+                                    LogHelper.e(TAG, "URL_STATION_DETAIL ARRAY(0) : " + jsonArray.getJSONObject(0).toString());
+
+                                    JSONObject stationDetailObject = jsonArray.getJSONObject(0);
+                                    stationDetailObject.put("stationName", stationName);    //측정소 측정값을 저장 후 나중에 불러올 때를 위해 측정소명도 넣어준다.
+                                    stationDetailObject.put("measuredAddress", strAddress);     //나중에 불러올 때를 위해 측정소 측정한 사용자의 위치 혹은 검색 위치도 넣어준다.
+                                    AppPreference.saveLastMeasureDetail(mContext, stationDetailObject.toString());
+                                    AppPreference.saveLastMeasureTime(mContext, stationDetailObject.getString("dataTime"));  //측정한 시간 저장
+
+                                    setPMValueUI();     //UI 업데이트
+                                    Toast.makeText(mContext, "미세먼지 정보가 갱신되었습니다.", Toast.LENGTH_SHORT).show();
+
                                 } catch (JSONException | ParseException e) {
                                     LogHelper.errorStackTrace(e);
+                                    Toast.makeText(mContext, "미세먼지 정보 갱신 실패. 측정소 상세 측정값을 불러오지 못하였어요.", Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
 
                     } catch (JSONException e) {
                         LogHelper.errorStackTrace(e);
+                        Toast.makeText(mContext, "미세먼지 정보 갱신 실패. 측정소 상세 측정값을 불러오지 못하였어요.", Toast.LENGTH_LONG).show();
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     LogHelper.e(TAG, "ERROR : " + error.getMessage());
+                    Toast.makeText(mContext, "미세먼지 정보 갱신 실패. 측정소 상세 측정값을 불러오지 못하였어요.", Toast.LENGTH_LONG).show();
                 }
             });
 
@@ -368,23 +418,26 @@ public class MainActivity extends AppCompatActivity {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, String.format(CConstants.URL_KAKAO_GEO_COORD2ADDRESS, String.valueOf(geoX), String.valueOf(geoY)), null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                String strAddress;
                 try {
                     JSONArray jsonArray = response.getJSONArray("documents");
-                    LogHelper.e(TAG, jsonArray.toString());
+                    LogHelper.e(TAG, "URL_KAKAO_GEO_COORD2ADDRESS : " + jsonArray.toString());
                     JSONObject addressObject = jsonArray.getJSONObject(0).getJSONObject("address");
-                    String strAddress =  addressObject.getString("region_2depth_name") + " " + addressObject.getString("region_3depth_name");
-                    btnRefresh.setText(strAddress );
+                    strAddress = addressObject.getString("region_2depth_name") + " " + addressObject.getString("region_3depth_name");
+//                    btnRefresh.setText(strAddress);
                     AppPreference.saveLastMeasureAddr(mContext, strAddress);
                 } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
-                    btnRefresh.setText("현재 주소 알수없음");
+                    strAddress = "현재 주소 알수없음";
+//                    btnRefresh.setText("현재 주소 알수없음");
                 }
+                getStationDetail(nearestStationName, strAddress);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 LogHelper.e(TAG, "ERROR : " + error.getMessage());
-                btnRefresh.setText("현재 주소 알수없음");
+                btnRefresh.setText("주소 알수없음");
             }
         }) {
             @Override
@@ -404,10 +457,12 @@ public class MainActivity extends AppCompatActivity {
      * @throws ParseException
      */
     void setPMValueUI() throws JSONException, ParseException {
-        if (stationDetailObject == null) return;
+        if (AppPreference.loadLastMeasureDetail(mContext) == null || AppPreference.loadLastMeasureDetail(mContext).equals(""))
+            return;
 
-        String pm10Value = stationDetailObject.getString("pm10Value");
-        String pm25Value = stationDetailObject.getString("pm25Value");
+        JSONObject detailObject = new JSONObject(AppPreference.loadLastMeasureDetail(mContext));
+        String pm10Value = detailObject.getString("pm10Value");
+        String pm25Value = detailObject.getString("pm25Value");
 
         if (pm25Value.equals("-"))
             pm25Value = "-1";
@@ -439,7 +494,7 @@ public class MainActivity extends AppCompatActivity {
         txtValuePM25.setText(Utility.getGradeStr(pm25Grade));
 
 
-        String dataTime = stationDetailObject.getString("dataTime");
+        String dataTime = detailObject.getString("dataTime");
 
         final String OLD_FORMAT = "yyyy-MM-dd HH:mm";
         final String NEW_FORMAT = "HH:mm";
@@ -486,6 +541,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
+        btnRefresh.setText(detailObject.getString("measuredAddress"));
     }
 
     /**
@@ -493,10 +549,25 @@ public class MainActivity extends AppCompatActivity {
      */
     @OnClick(R.id.btn_refresh)
     void btnSearchClick() {
-        if(!isSearch)           //메인페이지에서 현재 주소 찾을 때
-           getLocationData();
-        else  //검색 하여 찾을 때
-            getStationList(locationX,locationY);
+        if (AppPreference.loadIsUseSearchedStation(mContext)) {      //검색 하여 찾을 때
+//            getStationList(locationX, locationY);
+            if (Utility.shouldRefreshDetail(mContext)) {         //최근 갱신한 시간을 불러와서 갱신할지 여부 확인
+                LogHelper.e(TAG, "측정할 시간이 되어 서버에서 갱신, 최근 측정 시간 : " + AppPreference.loadLastMeasureTime(mContext));
+
+                try {
+                    JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(mContext));
+                    getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"));
+                } catch (Exception e) {
+                    LogHelper.errorStackTrace(e);
+                }
+
+            } else {
+                LogHelper.e(TAG, "측정할 시간이 되지 않아 서버에서 갱신하지 않음, 최근 측정 시간 : " + AppPreference.loadLastMeasureTime(mContext));
+                Toast.makeText(mContext, "미세먼지 정보가 갱신되었습니다.", Toast.LENGTH_SHORT).show();   //사용자에게는 갱신되었다고 보여줌 // TODO: 2017. 9. 8. 새로고침 이미지 자리에 progressDialog 넣기
+            }
+        } else {        //메인페이지에서 현재 주소 찾을 때
+            getLocationData();
+        }
     }
 
     /**
@@ -567,14 +638,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CConstants.SEARCH_LOCATION && resultCode == CConstants.SELECT_ITEM) {
-            locationX = data.getDoubleExtra("x",-1);
-            locationY = data.getDoubleExtra("y",-1);
-            getStationList(locationX,locationY);
-            isSearch = true;
+            locationX = data.getDoubleExtra("x", -1);
+            locationY = data.getDoubleExtra("y", -1);
+            getStationList(locationX, locationY);
+//            isSearch = true;
         }
     }
 
-    public void sendSearch(){
+    /**
+     * 검색 창으로 이동
+     */
+    public void openSearchPage() {
         Intent intent = new Intent(MainActivity.this, SearchActivity.class);
         startActivityForResult(intent, CConstants.SEARCH_LOCATION);
     }

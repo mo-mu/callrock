@@ -30,22 +30,22 @@ public class AppPreference {
     }
 
     /**
-     * @return 가장 최근 측정값 가져온 측정소명 불러옴
+     * @return 가장 최근 측정값 가져온 측정소명, 검색 주소 Object 불러옴
      */
     public static String loadLastMeasureStation(Context mContext) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        return sharedPreferences.getString("lastMeasureStation", "");
+        return sharedPreferences.getString("lastMeasurePlace", "");
     }
 
     /**
-     * 가장 최근 측정값 가져온 기준 주소 저장
+     * 가장 최근 측정값 가져온 측정소명, 검색 주소 Object 저장
      *
-     * @param station 가장 최근 측정값 가져온 기준 주소
+     * @param object 가장 최근 측정값 가져온 기준 주소 Object
      */
-    public static void saveLastMeasureStation(Context mContext, String station) {
+    public static void saveLastMeasurePlace(Context mContext, String object) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("lastMeasureStation", station);
+        editor.putString("lastMeasurePlace", object);
         editor.apply();
     }
 
@@ -58,34 +58,76 @@ public class AppPreference {
     }
 
     /**
-     * 가장 최근 측정값 가져온 측정소명 저장
+     * 가장 최근 측정값 가져온 주소명 저장
      *
-     * @param station 가장 최근 측정값 가져온 측정소명
+     * @param address 가장 최근 측정값 가져온 주소명
      */
-    public static void saveLastMeasureAddr(Context mContext, String station) {
+    public static void saveLastMeasureAddr(Context mContext, String address) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("lastMeasureAddr", station);
+        editor.putString("lastMeasureAddr", address);
         editor.apply();
     }
 
     /**
-     * @return 가장 최근 측정값 가져온 시간 (timemillis) 불러옴
+     * @return 가장 최근 측정값 가져온 시간 (YYYY-MM-DD HH:mm) 불러옴
      */
-    public static long loadLastMeasureTime(Context mContext) {
+    public static String loadLastMeasureTime(Context mContext) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        return sharedPreferences.getLong("lastMeasureTime", 0);
+        return sharedPreferences.getString("lastMeasureTime", "");
     }
 
     /**
-     * 가장 최근 측정값 가져온 시간 (timemillis) 저장
+     * 가장 최근 측정값 가져온 시간 저장
      *
-     * @param time 가장 최근 측정값 가져온 시간
+     * @param time 가장 최근 측정값 가져온 시간 (YYYY-MM-DD HH:mm) 저장
      */
-    public static void saveLastMeasureTime(Context mContext, long time) {
+    public static void saveLastMeasureTime(Context mContext, String time) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putLong("lastMeasureTime", time);
+        editor.putString("lastMeasureTime", time);
+        editor.apply();
+    }
+
+    /**
+     * @return 가장 최근 측정값 Object 불러옴 (측정소명 추가함)
+     */
+    public static String loadLastMeasureDetail(Context mContext) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        return sharedPreferences.getString("lastMeasureDetail", "");
+    }
+
+    /**
+     * 가장 최근 측정값 Object 저장 (측정소명 추가함)
+     *
+     * @param detail 가장 최근 측정값 Object
+     */
+    public static void saveLastMeasureDetail(Context mContext, String detail) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("lastMeasureDetail", detail);
+        editor.apply();
+    }
+
+    /**
+     * 측정소 설정 불러옴
+     *
+     * @return true : 검색해서 찾은 측정소 사용, false : 현재 위치 기준 측정소 사용
+     */
+    public static boolean loadIsUseSearchedStation(Context mContext) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        return sharedPreferences.getBoolean("useSearchedStation", false);
+    }
+
+    /**
+     * 측정소 설정 저장
+     *
+     * @param state true : 검색해서 찾은 측정소 사용, false : 현재 위치 기준 측정소 사용
+     */
+    public static void saveIsUseSearchedStation(Context mContext, boolean state) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("useSearchedStation", state);
         editor.apply();
     }
 }

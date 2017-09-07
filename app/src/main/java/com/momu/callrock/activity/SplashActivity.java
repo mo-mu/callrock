@@ -22,6 +22,7 @@ import com.momu.callrock.constant.CConstants;
 import com.momu.callrock.utility.LogHelper;
 
 import io.fabric.sdk.android.Fabric;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,6 +39,7 @@ public class SplashActivity extends AppCompatActivity {
     private static final String TAG = "SplashActivity";
 
     @BindView(R.id.txtTitle) TextView txtTitle;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +55,6 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
                 startActivity(new Intent(SplashActivity.this, MainActivity.class));
                 finish();
             }
@@ -71,13 +72,13 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    JSONArray jsonObject = response.getJSONArray("list");
-                    LogHelper.e("@@@", jsonObject.toString());
+                    JSONArray jsonArray = response.getJSONArray("list");
+                    LogHelper.e("@@@", jsonArray.toString());
                     JSONArray result = new JSONArray();
 
-                    if (jsonObject != null) {
-                        for (int i = 0; i < jsonObject.length(); i++) {
-                            JSONObject o = jsonObject.getJSONObject(i);
+                    if (jsonArray.length() > 0) {
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject o = jsonArray.getJSONObject(i);
 
                             JSONObject curObs = new JSONObject();
                             curObs.put("addr", o.getString("addr"));
@@ -96,8 +97,8 @@ public class SplashActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-        //        startActivity(new Intent(SplashActivity.this, MainActivity.class));
-         //       finish();
+                //        startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                //       finish();
             }
         }, new Response.ErrorListener() {
             @Override
