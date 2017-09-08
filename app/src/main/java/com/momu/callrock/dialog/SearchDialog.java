@@ -1,4 +1,4 @@
-package com.momu.callrock.item;
+package com.momu.callrock.dialog;
 
 import android.app.Dialog;
 import android.content.Context;

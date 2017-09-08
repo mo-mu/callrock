@@ -17,7 +17,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.crashlytics.android.Crashlytics;
 import com.momu.callrock.R;
-import com.momu.callrock.config.CConfig;
 import com.momu.callrock.constant.CConstants;
 import com.momu.callrock.utility.LogHelper;
 
@@ -48,7 +47,7 @@ public class SplashActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
 
-        Typeface typeFace1 = Typeface.createFromAsset(getAssets(), CConfig.FONT_NANUM_MYEONGJO);
+        Typeface typeFace1 = Typeface.createFromAsset(getAssets(), CConstants.FONT_NANUM_MYEONGJO);
         txtTitle.setTypeface(typeFace1);
 
         getObserve();
@@ -73,7 +72,7 @@ public class SplashActivity extends AppCompatActivity {
             public void onResponse(JSONObject response) {
                 try {
                     JSONArray jsonArray = response.getJSONArray("list");
-                    LogHelper.e("@@@", jsonArray.toString());
+                    LogHelper.e(TAG, jsonArray.toString());
                     JSONArray result = new JSONArray();
 
                     if (jsonArray.length() > 0) {
@@ -96,9 +95,6 @@ public class SplashActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-                //        startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                //       finish();
             }
         }, new Response.ErrorListener() {
             @Override

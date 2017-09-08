@@ -34,7 +34,7 @@
             android:windowSoftInputMode="stateVisible"/>
 
         <receiver
-            android:name=".WidgetProvider"
+            android:name=".widget.WidgetProvider"
             android:label="위젯 테스트" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

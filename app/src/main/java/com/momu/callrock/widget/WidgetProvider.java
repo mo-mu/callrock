@@ -1,4 +1,4 @@
-package com.momu.callrock;
+package com.momu.callrock.widget;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -8,12 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
 
+import com.momu.callrock.R;
 import com.momu.callrock.activity.SplashActivity;
 import com.momu.callrock.preference.AppPreference;
 import com.momu.callrock.utility.LogHelper;
-import com.momu.callrock.utility.Utility;
 
 /**
+ * 위젯에서 사용하는 AppWidgetProvider
  * Created by knulps on 2017. 8. 25..
  */
 

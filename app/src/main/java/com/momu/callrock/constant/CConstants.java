@@ -1,6 +1,7 @@
 package com.momu.callrock.constant;
 
 /**
+ * 상수 모음
  * Created by knulps on 2017. 7. 16..
  */
 public class CConstants {
@@ -57,4 +58,13 @@ public class CConstants {
     public static final int SELECT_ITEM = 2001;
 
 
+    /**
+     * 나눔명조 폰트
+     */
+    public static final String FONT_NANUM_MYEONGJO = "fonts/NanumMyeongjoExtraBold.otf";
+
+    /**
+     * 나눔Squarer(?) 폰트
+     */
+    public static final String FONT_NANUM_SQUAR = "fonts/NANUMSQUARER.TTF";
 }

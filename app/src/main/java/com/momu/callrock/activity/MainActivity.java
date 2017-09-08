@@ -36,9 +36,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.momu.callrock.R;
-import com.momu.callrock.config.CConfig;
 import com.momu.callrock.constant.CConstants;
-import com.momu.callrock.item.SearchDialog;
+import com.momu.callrock.dialog.SearchDialog;
 import com.momu.callrock.preference.AppPreference;
 import com.momu.callrock.utility.LogHelper;
 import com.momu.callrock.utility.Utility;
@@ -144,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initView() {
         //글꼴 초기화
-        Typeface typeFace1 = Typeface.createFromAsset(getAssets(), CConfig.FONT_NANUM_MYEONGJO);
+        Typeface typeFace1 = Typeface.createFromAsset(getAssets(), CConstants.FONT_NANUM_MYEONGJO);
         txtGradeMain.setTypeface(typeFace1);
         btnRefresh.setTypeface(typeFace1);
 
