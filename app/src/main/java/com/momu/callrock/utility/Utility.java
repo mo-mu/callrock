@@ -19,29 +19,32 @@ public class Utility {
     /**
      * pm10 미세먼지 등급 계산 0 : 좋음, 1: 보통, 2: 나쁨, 3: 매우나쁨
      *
-     * @param aqi        미세먼지 농도
-     * @param isWhoGrade WHO 기준 여부
+     * @param strAqi 미세먼지 농도
      * @return pm10 미세먼지 등급
      */
-    public static int pm10Grade(int aqi, boolean isWhoGrade) {
+    public static int pm10Grade(Context mContext, String strAqi) {
+        int aqi = Integer.parseInt(strAqi);
+        boolean isWhoGrade = AppPreference.loadIsWhoGrade(mContext); // WHO 기준 여부
+
         if (aqi == -1) return -1;        //측정값 없음
 
         if (isWhoGrade) {
             if (aqi < 31) {
                 return 0;
-            } else if (aqi < 81) {
+            } else if (aqi < 51) {
                 return 1;
-            } else if (aqi < 151) {
+            } else if (aqi < 101) {
                 return 2;
             } else {
                 return 3;
             }
+
         } else {
             if (aqi < 31) {
                 return 0;
-            } else if (aqi < 51) {
+            } else if (aqi < 81) {
                 return 1;
-            } else if (aqi < 101) {
+            } else if (aqi < 151) {
                 return 2;
             } else {
                 return 3;
@@ -52,12 +55,15 @@ public class Utility {
     /**
      * pm25 미세먼지 등급 계산 0 : 좋음, 1: 보통, 2: 나쁨, 3: 매우나쁨
      *
-     * @param aqi        미세먼지 농도
-     * @param isWhoGrade WHO 기준 여부
+     * @param strAqi 미세먼지 농도
      * @return pm25 미세먼지 등급
      */
-    public static int pm25Grade(int aqi, boolean isWhoGrade) {
+    public static int pm25Grade(Context mContext, String strAqi) {
+        int aqi = Integer.parseInt(strAqi);
+        boolean isWhoGrade = AppPreference.loadIsWhoGrade(mContext); // WHO 기준 여부
+
         if (aqi == -1) return -1;         //측정값 없음
+
         if (isWhoGrade) {
             if (aqi < 16) {
                 return 0;

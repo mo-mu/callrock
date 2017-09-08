@@ -470,8 +470,8 @@ public class MainActivity extends AppCompatActivity {
         if (pm10Value.equals("-"))
             pm10Value = "-1";
 
-        pm10Grade = Utility.pm10Grade(Integer.parseInt(pm10Value), AppPreference.loadIsWhoGrade(mContext));
-        pm25Grade = Utility.pm25Grade(Integer.parseInt(pm25Value), AppPreference.loadIsWhoGrade(mContext));
+        pm10Grade = Utility.pm10Grade(mContext, pm10Value);
+        pm25Grade = Utility.pm25Grade(mContext, pm25Value);
 
         if (pm10Grade == -1) {        //측정값 없을 경우
             txtValuePM10Degree.setText("");

@@ -512,7 +512,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="31 ~ 30 보통"/>
+                            android:text="31 ~ 80 보통"/>
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="wrap_content"
