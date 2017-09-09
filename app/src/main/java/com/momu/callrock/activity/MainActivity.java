@@ -203,12 +203,14 @@ public class MainActivity extends AppCompatActivity {
                     AppPreference.saveIsWhoGrade(mContext, true);
                     layoutKorea.setVisibility(View.GONE);
                     layoutWho.setVisibility(View.VISIBLE);
+                    Toast.makeText(mContext, "WHO 기준이 적용되었어요 :)", Toast.LENGTH_SHORT).show();
 
                 } else {
                     LogHelper.e(TAG, "onCheckedChanged, false");
                     AppPreference.saveIsWhoGrade(mContext, false);
                     layoutWho.setVisibility(View.GONE);
                     layoutKorea.setVisibility(View.VISIBLE);
+                    Toast.makeText(mContext, "WHO 기준이 해제되었어요 :/", Toast.LENGTH_SHORT).show();
                 }
 
                 try {
