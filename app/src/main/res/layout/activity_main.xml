@@ -19,7 +19,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp">
+            android:layout_marginBottom="20dp">
 
             <ImageView
                 android:id="@+id/btn_search"
@@ -273,8 +273,8 @@
             android:paddingTop="5dp">
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:src="@drawable/icon_mask" />
 
             <ImageView
@@ -301,8 +301,8 @@
             android:paddingTop="5dp">
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:src="@drawable/icon_tree"/>
 
 
@@ -329,8 +329,8 @@
             android:paddingTop="5dp">
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:src="@drawable/icon_water"/>
 
 
@@ -357,8 +357,8 @@
             android:paddingTop="5dp">
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:src="@drawable/icon_window"/>
 
 
