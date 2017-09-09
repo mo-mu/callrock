@@ -55,7 +55,7 @@
                         android:layout_marginBottom="3dp"
                         android:text="측정소 위치"
                         android:textColor="@color/black"
-                        android:textSize="22sp"
+                        android:textSize="21sp"
                         android:textStyle="bold"/>
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -374,16 +374,6 @@
                 android:layout_height="wrap_content"
                 android:text="밖으로 고고고"/>
         </LinearLayout>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:textSize="12dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="15dp"
-            android:text= "&quot;미세한&quot;은 한국환경공단(에어코리아)의\n 실시간 관측 데이터 자료를 활용하고 있습니다."/>
-
     </LinearLayout>
     </ScrollView>
 
@@ -799,5 +789,14 @@
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-    </android.support.design.widget.NavigationView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:gravity="center|bottom"
+            android:textSize="12dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="35dp"
+            android:text= "&quot;미세한&quot;은 한국환경공단(에어코리아)의\n 실시간 관측 데이터 자료를 활용하고 있습니다."/>
+     </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>
