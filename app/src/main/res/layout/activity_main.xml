@@ -134,30 +134,24 @@
             android:layout_marginTop="5dp"
             android:background="#aaaaaa"/>
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:weightSum="2"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp">
-
-            <ImageView
-                android:id="@+id/img_center"
-                android:layout_width="10dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center"
-                android:src="@drawable/square_3_img"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:weightSum="2">
+                android:weightSum="3">
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:layout_weight="1"
+                    android:layout_weight="1.25"
                     android:orientation="vertical">
 
                     <TextView
@@ -201,13 +195,19 @@
                 </LinearLayout>
 
 
+
+                <ImageView
+                    android:id="@+id/img_center"
+                    android:layout_width="0dp"
+                    android:layout_height="25dp"
+                    android:layout_weight="0.5"
+                    android:layout_gravity="center"
+                    android:src="@drawable/square_3_img"/>
+
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dp"
-                    android:layout_toRightOf="@id/img_center"
-                    android:layout_weight="1"
+                    android:layout_weight="1.25"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -251,7 +251,7 @@
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-        </FrameLayout>
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
@@ -412,46 +412,6 @@
                     android:layout_gravity="right"/>
             </FrameLayout>
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_gravity="center"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="위치 추가하기"
-                    android:textSize="16sp"
-                    android:textStyle="bold"/>
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_gravity="center"
-                android:layout_height="50dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="앱버전 "
-                    android:textSize="16sp"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:text="1.0"
-                    android:textSize="16sp"/>
-            </FrameLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/textColor"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"/>
 
            <LinearLayout
                 android:id="@+id/layout_table_korea"
@@ -772,8 +732,7 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="5dp">
+                        android:orientation="horizontal">
                         <ImageView
                             android:layout_width="37dp"
                             android:layout_height="7dp"
@@ -788,6 +747,51 @@
 
                 </LinearLayout>
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#aaaaaa"
+                android:layout_marginTop="25dp"
+                android:layout_marginBottom="25dp"/>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_gravity="center"
+                android:layout_height="50dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="앱버전 "
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="1.0"
+                    android:textSize="16sp"/>
+            </FrameLayout>
+
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="위치 추가하기"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
+            </FrameLayout>
+
+
+
         </LinearLayout>
         <TextView
             android:layout_width="wrap_content"
