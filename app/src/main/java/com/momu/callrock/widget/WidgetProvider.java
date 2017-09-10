@@ -232,6 +232,7 @@ public class WidgetProvider extends AppWidgetProvider {
     /**
      * 메인화면에 초미세먼지, 미세먼지 관련 UI 업데이트
      *
+     * @param mContext
      * @throws JSONException
      * @throws ParseException
      */
@@ -308,6 +309,11 @@ public class WidgetProvider extends AppWidgetProvider {
         return mainGrade;
     }
 
+    /**
+     * 정보를 제대로 가져오지 못했을 때 보여주는 ui
+     *
+     * @param mContext
+     */
     void setFailedUi(Context mContext){
         RemoteViews updateViews = new RemoteViews(mContext.getPackageName(), R.layout.layout_widget);
 
