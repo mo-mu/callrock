@@ -207,21 +207,21 @@ public class WidgetProvider extends AppWidgetProvider {
 
                                 } catch (JSONException e) {
                                     LogHelper.errorStackTrace(e);
-                                    Toast.makeText(mContext, "미세먼지 정보 갱신 실패. 측정소 상세 측정값을 불러오지 못하였어요.", Toast.LENGTH_LONG).show();
+                                    setFailedUi(mContext);
                                 }
                             }
                         });
 
                     } catch (JSONException e) {
                         LogHelper.errorStackTrace(e);
-                        Toast.makeText(mContext, "미세먼지 정보 갱신 실패. 측정소 상세 측정값을 불러오지 못하였어요.", Toast.LENGTH_LONG).show();
+                        setFailedUi(mContext);
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     LogHelper.e(TAG, "ERROR : " + error.getMessage());
-                    Toast.makeText(mContext, "미세먼지 정보 갱신 실패. 측정소 상세 측정값을 불러오지 못하였어요.", Toast.LENGTH_LONG).show();
+                    setFailedUi(mContext);
                 }
             });
 
@@ -308,4 +308,14 @@ public class WidgetProvider extends AppWidgetProvider {
         return mainGrade;
     }
 
+    void setFailedUi(Context mContext){
+        RemoteViews updateViews = new RemoteViews(mContext.getPackageName(), R.layout.layout_widget);
+
+        updateViews.setImageViewResource(R.id.img_main_widget,R.drawable.ic_status_1);
+        updateViews.setTextViewText(R.id.txt_status_main, "정보를 불러오지 못했어요.");
+        updateViews.setTextViewText(R.id.txt_recommend, "");
+
+
+        appWidgetManager.updateAppWidget(appWidgetId, updateViews);
+    }
 }
