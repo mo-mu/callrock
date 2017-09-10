@@ -41,9 +41,11 @@ import static com.google.android.gms.internal.zzagz.runOnUiThread;
 public class WidgetProvider extends AppWidgetProvider {
     private static final String TAG = "WidgetProvider";
     int pm10Grade, pm25Grade;
-    int mainGrade = 3;
+    int mainGrade = -1;
     int appWidgetId;
-    String UPDATE_WIDGET = "UPDATE CLICKED";
+
+
+    AppWidgetManager appWidgetManager;
 
     /**
      * 브로드캐스트를 수신할때, Override된 콜백 메소드가 호출되기 직전에 호출됨
@@ -53,11 +55,9 @@ public class WidgetProvider extends AppWidgetProvider {
         super.onReceive(context, intent);
         LogHelper.e(TAG, "onReceive 진입");
 
-        if(UPDATE_WIDGET.equals(intent.getAction())){
+        if(CConstants.UPDATE_WIDGET.equals(intent.getAction())){    //위젯의 업데이트 버튼 클릭 시 동작하는 부분
 
-
-            LogHelper.e(TAG, "onReceive 진입 DFDFDF");
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            appWidgetManager = AppWidgetManager.getInstance(context);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, getClass()));
             for (int i = 0; i < appWidgetIds.length; i++) {
 
@@ -76,6 +76,7 @@ public class WidgetProvider extends AppWidgetProvider {
                          int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
 
+        this.appWidgetManager = appWidgetManager;
         appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, getClass()));
         for (int i = 0; i < appWidgetIds.length; i++) {
 
@@ -91,20 +92,18 @@ public class WidgetProvider extends AppWidgetProvider {
      * @param appWidgetId      해당 위젯 ID
      */
     public void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+        RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.layout_widget);
+
         try {
             this.appWidgetId = appWidgetId;
             JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(context));
-            getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"),context,appWidgetManager);
+            getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"),context);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
 
         LogHelper.e(TAG, "updateAppWidget 진입");
-        RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.layout_widget);
-        updateViews.setTextViewText(R.id.txt_address_widget, AppPreference.loadLastMeasureAddr(context));
-        updateViews.setTextViewText(R.id.txt_status_main, Utility.getGradeStr(mainGrade));
-        updateViews.setTextViewText(R.id.txt_recommend, Utility.getWholeStr(mainGrade));
         //updateViews.setTextViewText(R.id.txt_time_sync_widget, Utility.getTimeFormatFromMillis(AppPreference.loadLastMeasureTime(context)));
 
         /**
@@ -114,8 +113,11 @@ public class WidgetProvider extends AppWidgetProvider {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
         updateViews.setOnClickPendingIntent(R.id.layout_widget_body, pendingIntent);
 
+        /**
+         * 새로고침 클릭 시 새로고침 코드 실행(onReceive 콜 함)
+         */
         Intent update = new Intent(context,WidgetProvider.class);
-        update.setAction(UPDATE_WIDGET);
+        update.setAction(CConstants.UPDATE_WIDGET);
         PendingIntent pendingIntent1 = PendingIntent.getBroadcast(context,0,update,0);
         updateViews.setOnClickPendingIntent(R.id.btn_sync_widget,pendingIntent1);
 
@@ -164,7 +166,7 @@ public class WidgetProvider extends AppWidgetProvider {
      *
      * @param stationName 측정소 이름
      */
-    void getStationDetail(final String stationName, final String strAddress, final Context mContext, final AppWidgetManager appWidgetManager) {
+    void getStationDetail(final String stationName, final String strAddress, final Context mContext) {
         LogHelper.e(TAG, "getStationDetail 진입   "+stationName);
 
 
@@ -196,7 +198,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
 
                                     try {
-                                        setPMValueUI(mContext,appWidgetManager);
+                                        setPMValueUI(mContext);
                                     } catch (ParseException e) {
                                         e.printStackTrace();
                                     }
@@ -233,7 +235,7 @@ public class WidgetProvider extends AppWidgetProvider {
      * @throws JSONException
      * @throws ParseException
      */
-    int  setPMValueUI(Context mContext,AppWidgetManager appWidgetManager) throws JSONException, ParseException {
+    int  setPMValueUI(Context mContext) throws JSONException, ParseException {
         LogHelper.e(TAG, "setPMValueUI 진입");
 
         if (AppPreference.loadLastMeasureDetail(mContext) == null || AppPreference.loadLastMeasureDetail(mContext).equals(""))
@@ -273,6 +275,10 @@ public class WidgetProvider extends AppWidgetProvider {
         } else {
             mainGrade = pm25Grade;
         }
+
+        /**
+         * 위젯 ui 수정하는 부분
+         */
         RemoteViews updateViews = new RemoteViews(mContext.getPackageName(), R.layout.layout_widget);
 
         switch (mainGrade) {

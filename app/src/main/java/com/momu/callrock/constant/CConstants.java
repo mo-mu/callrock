@@ -59,6 +59,11 @@ public class CConstants {
 
 
     /**
+     * 위젯 업데이트 시 쓰는 값
+     */
+    public static final String UPDATE_WIDGET = "UPDATE CLICKED";
+
+    /**
      * 나눔명조 폰트
      */
     public static final String FONT_NANUM_MYEONGJO = "fonts/NanumMyeongjoExtraBold.otf";
