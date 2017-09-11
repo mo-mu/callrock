@@ -424,7 +424,10 @@ public class MainActivity extends AppCompatActivity {
                     JSONArray jsonArray = response.getJSONArray("documents");
                     LogHelper.e(TAG, "URL_KAKAO_GEO_COORD2ADDRESS : " + jsonArray.toString());
                     JSONObject addressObject = jsonArray.getJSONObject(0).getJSONObject("address");
+
                     strAddress = addressObject.getString("region_2depth_name") + " " + addressObject.getString("region_3depth_name");
+                    if(addressObject.getString("region_3depth_name").contains(" "))     // 면, 리 단계의 주소 체계일 경우, 읍, 면까지만 노출시키기 위해 코드 추가
+                        strAddress = addressObject.getString("region_2depth_name") + " " + addressObject.getString("region_3depth_name").split(" ")[0];
 //                    btnRefresh.setText(strAddress);
                     AppPreference.saveLastMeasureAddr(mContext, strAddress);
                 } catch (Exception e) {
