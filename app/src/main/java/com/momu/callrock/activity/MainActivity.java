@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -17,6 +19,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.RotateAnimation;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -37,6 +42,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.momu.callrock.R;
 import com.momu.callrock.constant.CConstants;
+import com.momu.callrock.dialog.DenyPmsDialog;
+import com.momu.callrock.dialog.PermissionDialog;
 import com.momu.callrock.dialog.SearchDialog;
 import com.momu.callrock.preference.AppPreference;
 import com.momu.callrock.utility.LogHelper;
@@ -56,6 +63,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.fabric.sdk.android.Fabric;
+
+import static com.momu.callrock.constant.CConstants.PERMISSION_SETTING_LOCATION;
 
 /**
  * 메인화면
@@ -82,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.txt_activity) TextView txtActivity;
     @BindView(R.id.txt_life) TextView txtLife;
     @BindView(R.id.txt_window) TextView txtWindow;
+    @BindView(R.id.img_refresh) ImageView refreshImg;
 
     Context mContext;
 
@@ -553,6 +563,14 @@ public class MainActivity extends AppCompatActivity {
      */
     @OnClick(R.id.btn_refresh)
     void btnSearchClick() {
+        Animation a = new RotateAnimation(0.0f, 360.0f,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+                0.5f);
+        a.setRepeatCount(2);
+        a.setDuration(1000);
+        refreshImg.startAnimation(a);
+
+
         if (AppPreference.loadIsUseSearchedStation(mContext)) {      //검색 하여 찾을 때
 //            getStationList(locationX, locationY);
             if (Utility.shouldRefreshDetail(mContext)) {         //최근 갱신한 시간을 불러와서 갱신할지 여부 확인
@@ -629,6 +647,40 @@ public class MainActivity extends AppCompatActivity {
                     LogHelper.e(TAG, "권한 확인 4");
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
+
+                    boolean showRationale = shouldShowRequestPermissionRationale( permissions[1] );
+                    if (! showRationale) {
+                        // user also CHECKED "never ask again"
+                        // you can either enable some fall back,
+                        // disable features of your app
+                        // or open another dialog explaining
+                        // again the permission and directing to
+                        // the app setting
+
+                        DenyPmsDialog mDialog = new DenyPmsDialog(mContext);
+                        mDialog.setCanceledOnTouchOutside(false);
+                        mDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                            @Override
+                            public void onShow(DialogInterface dialog) {
+
+                            }
+                        });
+                        mDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+
+                            }
+                        });
+                        mDialog.show();
+
+                    } else if (Manifest.permission.WRITE_CONTACTS.equals( permissions[1])) {
+                        Toast.makeText(mContext, "Hi! 2", Toast.LENGTH_SHORT).show();
+                      //  showRationale( permissions[0], R.string.permission_denied_contacts);
+                        // user did NOT check "never ask again"
+                        // this is a good place to explain the user
+                        // why you need the permission and ask if he wants
+                        // to accept it (the rationale)
+                    }
                 }
                 return;
             }
@@ -647,6 +699,9 @@ public class MainActivity extends AppCompatActivity {
             getStationList(locationX, locationY);
 //            isSearch = true;
         }
+        else if(requestCode == PERMISSION_SETTING_LOCATION){
+            onResume();
+        }
     }
 
     /**
@@ -655,5 +710,15 @@ public class MainActivity extends AppCompatActivity {
     public void openSearchPage() {
         Intent intent = new Intent(MainActivity.this, SearchActivity.class);
         startActivityForResult(intent, CConstants.SEARCH_LOCATION);
+    }
+
+    /**
+     *  권한 설정으로 이동
+     */
+    public void openPermissionPage(){
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", getPackageName(), null);
+        intent.setData(uri);
+        startActivityForResult(intent, PERMISSION_SETTING_LOCATION);
     }
 }

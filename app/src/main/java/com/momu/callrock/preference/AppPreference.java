@@ -130,4 +130,24 @@ public class AppPreference {
         editor.putBoolean("useSearchedStation", state);
         editor.apply();
     }
+
+    /**
+     * @return 퍼미션 보여주는 페이지 관련 값 불러옴
+     */
+    public static boolean loadIsFirst(Context mContext) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        return sharedPreferences.getBoolean("isFirst", false);
+    }
+
+    /**
+     * 측정소 설정 저장
+     *
+     * @param state true : 퍼미션 페이지 보여줌, false : 퍼미션페이지 보여주지 않음
+     */
+    public static void saveIsFirst(Context mContext, boolean state) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("isFirst", state);
+        editor.apply();
+    }
 }

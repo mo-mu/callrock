@@ -1,5 +1,7 @@
 package com.momu.callrock.activity;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -18,6 +20,9 @@ import com.android.volley.toolbox.Volley;
 import com.crashlytics.android.Crashlytics;
 import com.momu.callrock.R;
 import com.momu.callrock.constant.CConstants;
+import com.momu.callrock.dialog.PermissionDialog;
+import com.momu.callrock.dialog.SearchDialog;
+import com.momu.callrock.preference.AppPreference;
 import com.momu.callrock.utility.LogHelper;
 
 import io.fabric.sdk.android.Fabric;
@@ -36,6 +41,7 @@ import butterknife.ButterKnife;
 public class SplashActivity extends AppCompatActivity {
 
     private static final String TAG = "SplashActivity";
+    private Context mContext;
 
     @BindView(R.id.txtTitle) TextView txtTitle;
 
@@ -45,17 +51,38 @@ public class SplashActivity extends AppCompatActivity {
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
-
+        mContext = this;
 
         Typeface typeFace1 = Typeface.createFromAsset(getAssets(), CConstants.FONT_NANUM_MYEONGJO);
         txtTitle.setTypeface(typeFace1);
 
         getObserve();
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                finish();
+                if(AppPreference.loadIsFirst(mContext)) {  // 앱 설치 후 퍼미션 설정 페이지 봤을 때
+
+                    openMain();
+                }else { // 페이지 안봤을 때
+
+                    PermissionDialog mDialog = new PermissionDialog(mContext);
+                    mDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                        @Override
+                        public void onShow(DialogInterface dialog) {
+
+                        }
+                    });
+                    mDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+
+                        }
+                    });
+                    mDialog.show();
+                    mDialog.setCanceledOnTouchOutside(false);
+
+                }
             }
         }, 500);
     }
@@ -100,11 +127,37 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 LogHelper.e(TAG, "ERROR : " + error.getMessage());
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                finish();
+                if(AppPreference.loadIsFirst(mContext)) {  // 앱 설치 후 퍼미션 설정 페이지 봤을 때
+                    openMain();
+                }else { // 페이지 안봤을 때
+                    PermissionDialog mDialog = new PermissionDialog(mContext);
+                    mDialog.setCanceledOnTouchOutside(false);
+                    mDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                        @Override
+                        public void onShow(DialogInterface dialog) {
+
+                        }
+                    });
+                    mDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+
+                        }
+                    });
+                    mDialog.show();
+                }
             }
         });
 
         queue.add(jsonRequest);
+    }
+
+    /**
+     * main Activity 여는 메소드
+     */
+    public void openMain() {
+        startActivity(new Intent(SplashActivity.this, MainActivity.class));
+        AppPreference.saveIsFirst(mContext,true);
+        finish();
     }
 }

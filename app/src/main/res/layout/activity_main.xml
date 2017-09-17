@@ -69,6 +69,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                     <ImageView
+                        android:id="@+id/img_refresh"
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_gravity="center"

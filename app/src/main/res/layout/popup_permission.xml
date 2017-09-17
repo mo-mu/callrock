@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="330dp"
+    android:layout_height="500dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="미세한 사용을 위해 아래권한을 허용해주세요."/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="20dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="선택 접근권한" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="위치" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="현재 위치 검색을 위해 사용합니다."/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="선택접근권한은 동의하지 않아도 서비스 사용이 가능합니다"/>
+        </LinearLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/btn_accept"
+            android:layout_gravity="bottom"
+            android:background="@color/textColor">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="확인"
+                android:textColor="@color/white"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+    </FrameLayout>
+
+</FrameLayout>
