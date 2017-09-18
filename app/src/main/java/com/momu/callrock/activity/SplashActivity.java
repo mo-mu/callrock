@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -44,6 +45,7 @@ public class SplashActivity extends AppCompatActivity {
     private Context mContext;
 
     @BindView(R.id.txtTitle) TextView txtTitle;
+    @BindView(R.id.animation_view) LottieAnimationView animationView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,6 +54,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
         mContext = this;
+
 
         Typeface typeFace1 = Typeface.createFromAsset(getAssets(), CConstants.FONT_NANUM_MYEONGJO);
         txtTitle.setTypeface(typeFace1);
@@ -67,6 +70,8 @@ public class SplashActivity extends AppCompatActivity {
                 }else { // 페이지 안봤을 때
 
                     PermissionDialog mDialog = new PermissionDialog(mContext);
+                    mDialog.setCanceledOnTouchOutside(false);
+                    mDialog.setCancelable(false);
                     mDialog.setOnShowListener(new DialogInterface.OnShowListener() {
                         @Override
                         public void onShow(DialogInterface dialog) {
@@ -80,11 +85,10 @@ public class SplashActivity extends AppCompatActivity {
                         }
                     });
                     mDialog.show();
-                    mDialog.setCanceledOnTouchOutside(false);
 
                 }
             }
-        }, 500);
+        }, 2000);
     }
 
 
@@ -132,6 +136,7 @@ public class SplashActivity extends AppCompatActivity {
                 }else { // 페이지 안봤을 때
                     PermissionDialog mDialog = new PermissionDialog(mContext);
                     mDialog.setCanceledOnTouchOutside(false);
+                    mDialog.setCancelable(false);
                     mDialog.setOnShowListener(new DialogInterface.OnShowListener() {
                         @Override
                         public void onShow(DialogInterface dialog) {

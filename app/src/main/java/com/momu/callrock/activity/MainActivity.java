@@ -1,6 +1,10 @@
 package com.momu.callrock.activity;
 
 import android.Manifest;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,13 +14,16 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -48,6 +55,7 @@ import com.momu.callrock.dialog.SearchDialog;
 import com.momu.callrock.preference.AppPreference;
 import com.momu.callrock.utility.LogHelper;
 import com.momu.callrock.utility.Utility;
+import com.momu.callrock.widget.WidgetProvider;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -561,7 +569,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 검색 버튼 클릭 이벤트
      */
-    @OnClick(R.id.btn_refresh)
+    @OnClick(R.id.container_refresh)
     void btnSearchClick() {
         Animation a = new RotateAnimation(0.0f, 360.0f,
                 Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
@@ -579,16 +587,34 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(mContext));
                     getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"));
+
+                    /**
+                     * 앱에서 업데이트 시 위젯에서 업데이트 같이 함
+                     */
+                    AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+                    int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this,WidgetProvider.class));
+                    if (appWidgetIds.length > 0) {
+                        new WidgetProvider().onUpdate(this, appWidgetManager, appWidgetIds);
+                    }
                 } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
                 }
 
             } else {
                 LogHelper.e(TAG, "측정할 시간이 되지 않아 서버에서 갱신하지 않음, 최근 측정 시간 : " + AppPreference.loadLastMeasureTime(mContext));
-                Toast.makeText(mContext, "미세먼지 정보가 갱신되었습니다.", Toast.LENGTH_SHORT).show();   //사용자에게는 갱신되었다고 보여줌 // TODO: 2017. 9. 8. 새로고침 이미지 자리에 progressDialog 넣기
+                Toast.makeText(mContext, "미세먼지 정보가 갱신되었습니다.", Toast.LENGTH_SHORT).show();   //사용자에게는 갱신되었다고 보여줌
             }
         } else {        //메인페이지에서 현재 주소 찾을 때
             getLocationData();
+
+            /**
+             * 앱에서 업데이트 시 위젯에서 업데이트 같이 함
+             */
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this,WidgetProvider.class));
+            if (appWidgetIds.length > 0) {
+                new WidgetProvider().onUpdate(this, appWidgetManager, appWidgetIds);
+            }
         }
     }
 
@@ -648,7 +674,10 @@ public class MainActivity extends AppCompatActivity {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
 
-                    boolean showRationale = shouldShowRequestPermissionRationale( permissions[1] );
+                    boolean showRationale = false;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                        showRationale = shouldShowRequestPermissionRationale( permissions[1] );
+                    }
                     if (! showRationale) {
                         // user also CHECKED "never ask again"
                         // you can either enable some fall back,
@@ -659,6 +688,7 @@ public class MainActivity extends AppCompatActivity {
 
                         DenyPmsDialog mDialog = new DenyPmsDialog(mContext);
                         mDialog.setCanceledOnTouchOutside(false);
+                        mDialog.setCancelable(false);
                         mDialog.setOnShowListener(new DialogInterface.OnShowListener() {
                             @Override
                             public void onShow(DialogInterface dialog) {

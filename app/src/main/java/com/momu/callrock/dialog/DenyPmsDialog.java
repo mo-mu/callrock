@@ -37,5 +37,6 @@ public class DenyPmsDialog extends Dialog {
     @OnClick(R.id.btn_accept)
     void onAccepted(){
         ((MainActivity)mContext).openPermissionPage();
+        dismiss();
     }
 }

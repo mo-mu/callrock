@@ -41,7 +41,7 @@ public class PermissionDialog extends Dialog {
     @OnClick(R.id.btn_accept)
     void onAccepted(){
         ((SplashActivity)mContext).openMain();
-
+        dismiss();
     }
 
 }
