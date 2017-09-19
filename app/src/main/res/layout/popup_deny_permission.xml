@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="330dp"
-    android:layout_height="500dp">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -18,7 +15,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="현재 위치로 검색하려면 위치 권한에 동의해주세요."
+            android:gravity="center"
+            android:textSize="19dp"
+            android:text="현재 위치로 검색하려면  &#xA;위치 권한에 동의해주세요."
             />
 
 
@@ -26,25 +25,29 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:gravity="center"
                 android:layout_marginTop="20dp"
-                android:text="스마트폰 설정 > 앱 > 권한에서 위치 권한을 허용해주세요."
+                android:textSize="17dp"
+                android:text="스마트폰 설정 > 앱 > 권한에서 &#xA; 위치 권한을 허용해주세요."
                 />
+
+            <ImageView
+                android:layout_width="325dp"
+                android:layout_height="290dp"
+                android:src="@drawable/img_permission"
+                android:padding="20dp"/>
 
         </LinearLayout>
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:id="@+id/btn_accept"
-            android:layout_gravity="bottom"
-            android:background="@color/textColor">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="확인"
-                android:textColor="@color/white"
-                android:layout_gravity="center"/>
-        </FrameLayout>
-    </FrameLayout>
 
-</FrameLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/btn_accept"
+        android:layout_gravity="bottom"
+        android:textColor="@color/white"
+        android:text="확인"
+        android:background="@color/textColor">
+    </Button>
+
+</LinearLayout>

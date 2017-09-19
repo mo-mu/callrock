@@ -9,8 +9,6 @@ import android.view.Window;
 
 import com.momu.callrock.R;
 import com.momu.callrock.activity.MainActivity;
-import com.momu.callrock.activity.SplashActivity;
-import com.momu.callrock.preference.AppPreference;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;

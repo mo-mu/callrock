@@ -1,63 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="330dp"
-    android:layout_height="500dp">
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center">
-
-
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minWidth="325dp"
             android:layout_margin="20dp"
             android:orientation="vertical">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="미세한 사용을 위해 아래권한을 허용해주세요."/>
+                android:gravity="center"
+                android:textSize="19dp"
+                android:text="&quot;미세한&quot; 사용을 위해 &#xA;아래권한을 허용해주세요."/>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="@color/textColor"
+            android:layout_marginTop="30dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="10dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="17dp"
+                android:text="필수 접근권한" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="없음" />
+            </LinearLayout>
 
             <View
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="1dp"
                 android:background="@color/textColor"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="20dp"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="선택 접근권한" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="위치" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="현재 위치 검색을 위해 사용합니다."/>
+                android:layout_marginTop="10dp"/>
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="선택접근권한은 동의하지 않아도 서비스 사용이 가능합니다"/>
+                android:orientation="vertical"
+                android:layout_margin="10dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="17dp"
+                    android:text="선택 접근권한"
+                    android:layout_marginBottom="10dp"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:padding="5dp"
+                        android:src="@drawable/ic_pin"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16dp"
+                            android:layout_marginBottom="5dp"
+                            android:text="위치" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="현재 위치 검색을 위해 사용합니다."/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
         </LinearLayout>
-        <FrameLayout
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:gravity="center"
+            android:textSize="12dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="70dp"
+            android:text="선택접근권한은 동의하지 않아도 &#xA;서비스 사용이 가능합니다"/>
+        <Button
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:id="@+id/btn_accept"
             android:layout_gravity="bottom"
+            android:textColor="@color/white"
+            android:text="확인"
             android:background="@color/textColor">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="확인"
-                android:textColor="@color/white"
-                android:layout_gravity="center"/>
-        </FrameLayout>
-    </FrameLayout>
+        </Button>
 
-</FrameLayout>
+</LinearLayout>
