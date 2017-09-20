@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -43,7 +44,7 @@ public class WidgetProvider extends AppWidgetProvider {
     int pm10Grade, pm25Grade;
     int mainGrade = -1;
     int appWidgetId;
-
+Handler handler = new Handler();
 
     AppWidgetManager appWidgetManager;
 
@@ -94,13 +95,29 @@ public class WidgetProvider extends AppWidgetProvider {
     public void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.layout_widget);
 
-        try {
-            this.appWidgetId = appWidgetId;
-            JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(context));
-            getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"),context);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if ( Utility.shouldRefreshDetail(context)) {         //최근 갱신한 시간을 불러와서 갱신할지 여부 확인
+            LogHelper.e(TAG, "측정할 시간이 되어 서버에서 갱신, 최근 측정 시간 : " + AppPreference.loadLastMeasureTime(context));
+
+
+            try {
+                this.appWidgetId = appWidgetId;
+                JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(context));
+                getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"),context);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            try {
+                setPMValueUI(context);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            LogHelper.e(TAG, "측정할 시간이 되지 않아 서버에서 갱신하지 않음, 최근 측정 시간 : " + AppPreference.loadLastMeasureTime(context));
         }
+
 
 
         LogHelper.e(TAG, "updateAppWidget 진입");
@@ -280,7 +297,7 @@ public class WidgetProvider extends AppWidgetProvider {
         /**
          * 위젯 ui 수정하는 부분
          */
-        RemoteViews updateViews = new RemoteViews(mContext.getPackageName(), R.layout.layout_widget);
+        final RemoteViews updateViews = new RemoteViews(mContext.getPackageName(), R.layout.layout_widget);
 
         switch (mainGrade) {
             case 0:
@@ -301,11 +318,22 @@ public class WidgetProvider extends AppWidgetProvider {
         updateViews.setTextViewText(R.id.txt_recommend, Utility.getWholeStr(mainGrade));
         this.mainGrade = mainGrade;
 
+       updateViews.setViewVisibility(R.id.progressBar,View.VISIBLE);
+        updateViews.setViewVisibility(R.id.btn_sync_widget,View.GONE);
 
-        /**
-         * 위젯 업데이트
-         */
         appWidgetManager.updateAppWidget(appWidgetId, updateViews);
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                LogHelper.e(TAG,"run 진입");
+                updateViews.setViewVisibility(R.id.progressBar,View.GONE);
+                updateViews.setViewVisibility(R.id.btn_sync_widget,View.VISIBLE);
+
+                appWidgetManager.updateAppWidget(appWidgetId, updateViews);
+            }
+        },1500);
+
         return mainGrade;
     }
 

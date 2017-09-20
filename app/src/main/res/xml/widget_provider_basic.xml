@@ -5,4 +5,4 @@
                     android:minWidth="219dp"
                     android:previewImage="@drawable/img_cat_main"
                     android:resizeMode="horizontal|vertical"
-                    android:updatePeriodMillis="1800000"/>
+                    android:updatePeriodMillis="3600000"/>
