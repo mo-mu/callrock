@@ -138,6 +138,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(mContext));
                     getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"));
+
+                    updateWidget(); //위젯 업데이트
                 } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
                 }
@@ -588,14 +590,8 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(mContext));
                     getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"));
 
-                    /**
-                     * 앱에서 업데이트 시 위젯에서 업데이트 같이 함
-                     */
-                    AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-                    int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this,WidgetProvider.class));
-                    if (appWidgetIds.length > 0) {
-                        new WidgetProvider().onUpdate(this, appWidgetManager, appWidgetIds);
-                    }
+                    updateWidget();     //위젯 업데이트
+
                 } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
                 }
@@ -607,14 +603,19 @@ public class MainActivity extends AppCompatActivity {
         } else {        //메인페이지에서 현재 주소 찾을 때
             getLocationData();
 
-            /**
-             * 앱에서 업데이트 시 위젯에서 업데이트 같이 함
-             */
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this,WidgetProvider.class));
-            if (appWidgetIds.length > 0) {
-                new WidgetProvider().onUpdate(this, appWidgetManager, appWidgetIds);
-            }
+            updateWidget();     //위젯 업데이트
+        }
+    }
+
+    /**
+     * 위젯 업데이트 메소드
+     *
+     */
+    private void updateWidget() {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this,WidgetProvider.class));
+        if (appWidgetIds.length > 0) {
+            new WidgetProvider().onUpdate(this, appWidgetManager, appWidgetIds);
         }
     }
 

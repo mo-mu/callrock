@@ -95,27 +95,12 @@ Handler handler = new Handler();
     public void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.layout_widget);
 
-        if ( Utility.shouldRefreshDetail(context)) {         //최근 갱신한 시간을 불러와서 갱신할지 여부 확인
-            LogHelper.e(TAG, "측정할 시간이 되어 서버에서 갱신, 최근 측정 시간 : " + AppPreference.loadLastMeasureTime(context));
-
-
-            try {
-                this.appWidgetId = appWidgetId;
-                JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(context));
-                getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"),context);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        } else {
-            try {
-                setPMValueUI(context);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            LogHelper.e(TAG, "측정할 시간이 되지 않아 서버에서 갱신하지 않음, 최근 측정 시간 : " + AppPreference.loadLastMeasureTime(context));
+        try {
+            this.appWidgetId = appWidgetId;
+            JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(context));
+            getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"),context);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
 
