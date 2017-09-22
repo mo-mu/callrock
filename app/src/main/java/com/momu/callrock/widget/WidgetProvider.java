@@ -60,8 +60,7 @@ public class WidgetProvider extends AppWidgetProvider {
             appWidgetManager = AppWidgetManager.getInstance(context);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, getClass()));
             for (int i = 0; i < appWidgetIds.length; i++) {
-
-                updateAppWidget(context, appWidgetManager, appWidgetIds[i]);
+                updateAppWidget(context, appWidgetManager, appWidgetIds[i], false);
             }
         }
     }
@@ -80,7 +79,7 @@ public class WidgetProvider extends AppWidgetProvider {
         appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, getClass()));
         for (int i = 0; i < appWidgetIds.length; i++) {
 
-            updateAppWidget(context, appWidgetManager, appWidgetIds[i]);
+            updateAppWidget(context, appWidgetManager, appWidgetIds[i], true);
         }
     }
 
@@ -91,8 +90,13 @@ public class WidgetProvider extends AppWidgetProvider {
      * @param appWidgetManager
      * @param appWidgetId      해당 위젯 ID
      */
-    public void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+    public void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, boolean isFromOnUpdate) {
         RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.layout_widget);
+
+        if (!isFromOnUpdate) {       //수동 업데이트인 경우에만 프로그레스 다이얼로그를 보여준다.
+            updateViews.setViewVisibility(R.id.progressBar, View.VISIBLE);
+            updateViews.setViewVisibility(R.id.btn_sync_widget, View.GONE);
+        }
 
         try {
             this.appWidgetId = appWidgetId;
@@ -182,6 +186,7 @@ public class WidgetProvider extends AppWidgetProvider {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                boolean isError = false;
                                 try {
                                     JSONObject lastMeasurePlaceObject = new JSONObject();
                                     lastMeasurePlaceObject.put("stationName", stationName);
@@ -200,13 +205,17 @@ public class WidgetProvider extends AppWidgetProvider {
                                     try {
                                         setPMValueUI(mContext);
                                     } catch (ParseException e) {
-                                        e.printStackTrace();
+                                        LogHelper.errorStackTrace(e);
+                                        isError = true;
                                     }
                                     //Toast.makeText(mContext, "미세먼지 정보가 갱신되었습니다.", Toast.LENGTH_SHORT).show();
 
 
                                 } catch (JSONException e) {
                                     LogHelper.errorStackTrace(e);
+                                    isError = true;
+                                }
+                                if(isError) {
                                     setFailedUi(mContext);
                                 }
                             }
@@ -301,32 +310,22 @@ public class WidgetProvider extends AppWidgetProvider {
         updateViews.setTextViewText(R.id.txt_recommend, Utility.getWholeStr(mainGrade));
         this.mainGrade = mainGrade;
 
-        updateViews.setViewVisibility(R.id.progressBar, View.VISIBLE);
-        updateViews.setViewVisibility(R.id.btn_sync_widget, View.GONE);
+        updateViews.setViewVisibility(R.id.progressBar, View.GONE);
+        updateViews.setViewVisibility(R.id.btn_sync_widget, View.VISIBLE);
 
         appWidgetManager.updateAppWidget(appWidgetId, updateViews);
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                LogHelper.e(TAG, "run 진입");
-                updateViews.setViewVisibility(R.id.progressBar, View.GONE);
-                updateViews.setViewVisibility(R.id.btn_sync_widget, View.VISIBLE);
-
-                appWidgetManager.updateAppWidget(appWidgetId, updateViews);
-            }
-        }, 1500);
 
         return mainGrade;
     }
 
     /**
      * 정보를 제대로 가져오지 못했을 때 보여주는 ui
-     *
-     * @param mContext
      */
     void setFailedUi(Context mContext) {
         RemoteViews updateViews = new RemoteViews(mContext.getPackageName(), R.layout.layout_widget);
+
+        updateViews.setViewVisibility(R.id.progressBar, View.GONE);
+        updateViews.setViewVisibility(R.id.btn_sync_widget, View.VISIBLE);
 
         updateViews.setImageViewResource(R.id.img_main_widget, R.drawable.ic_status_1);
         updateViews.setTextViewText(R.id.txt_status_main, "정보를 불러오지 못했어요.");
