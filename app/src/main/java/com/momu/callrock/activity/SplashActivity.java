@@ -22,11 +22,8 @@ import com.crashlytics.android.Crashlytics;
 import com.momu.callrock.R;
 import com.momu.callrock.constant.CConstants;
 import com.momu.callrock.dialog.PermissionDialog;
-import com.momu.callrock.dialog.SearchDialog;
 import com.momu.callrock.preference.AppPreference;
 import com.momu.callrock.utility.LogHelper;
-
-import io.fabric.sdk.android.Fabric;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +31,7 @@ import org.json.JSONObject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * 스플레시 페이지

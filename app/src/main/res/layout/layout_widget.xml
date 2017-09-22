@@ -1,76 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/layout_widget_body"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/white"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="3dp">
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="right">
-        <TextView
-            android:id="@+id/txt_address_widget"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="위치"/>
+<LinearLayout android:id="@+id/layout_widget_body"
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:orientation="vertical"
+              android:paddingBottom="12dp"
+              android:paddingTop="12dp">
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp">
-            <ImageView
-                android:id="@+id/btn_sync_widget"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:padding="8dp"
-                android:src="@drawable/refresh_btn"/>
-            <ProgressBar
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:padding="8dp"
-                android:id="@+id/progressBar"
-                android:visibility="gone"/>
-        </FrameLayout>
-
-    </LinearLayout>
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
+        android:layout_height="match_parent"
+        android:background="@drawable/corner_rounded_white"
+        android:paddingBottom="4dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp">
 
         <ImageView
+            android:layout_marginTop="4dp"
             android:id="@+id/img_main_widget"
             android:layout_width="75dp"
             android:layout_height="45dp"
-            android:layout_gravity="left|center"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
             android:src="@drawable/ic_status_1"/>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="center_vertical">
-        <TextView
-            android:id="@+id/txt_status_main"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="16sp"
-            android:textStyle="bold"/>
 
-        <TextView
-            android:id="@+id/txt_recommend"
+        <RelativeLayout
+            android:layout_marginTop="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="12sp"/>
-        </LinearLayout>
-    </LinearLayout>
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/img_main_widget"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_status_main"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:gravity="center"
+                android:text="보통"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/txt_recommend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txt_status_main"
+                android:gravity="center"
+                android:text=""
+                android:textColor="@color/textColor"
+                android:textSize="12sp"/>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true">
+
+                <TextView
+                    android:id="@+id/txt_address_widget"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="위치"
+                    android:textColor="@color/textColor"
+                    android:textSize="11sp"/>
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="3dp"
+                    android:layout_toRightOf="@id/txt_address_widget">
+
+                    <ImageView
+                        android:id="@+id/btn_sync_widget"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:padding="5dp"
+                        android:src="@drawable/refresh_btn"/>
+
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:padding="5dp"
+                        android:visibility="gone"/>
+                </FrameLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+    </RelativeLayout>
 
 </LinearLayout>

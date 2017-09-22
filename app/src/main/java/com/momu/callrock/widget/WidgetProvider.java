@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.os.Handler;
 import android.view.View;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -44,19 +43,19 @@ public class WidgetProvider extends AppWidgetProvider {
     int pm10Grade, pm25Grade;
     int mainGrade = -1;
     int appWidgetId;
-Handler handler = new Handler();
+    Handler handler = new Handler();
 
     AppWidgetManager appWidgetManager;
 
     /**
-     * 브로드캐스트를 수신할때, Override된 콜백 메소드가 호출되기 직전에 호출됨
+     * 브로드캐스트를 수신할때, override된 콜백 메소드가 호출되기 직전에 호출됨
      */
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
         LogHelper.e(TAG, "onReceive 진입");
 
-        if(CConstants.UPDATE_WIDGET.equals(intent.getAction())){    //위젯의 업데이트 버튼 클릭 시 동작하는 부분
+        if (CConstants.UPDATE_WIDGET.equals(intent.getAction())) {    //위젯의 업데이트 버튼 클릭 시 동작하는 부분
 
             appWidgetManager = AppWidgetManager.getInstance(context);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, getClass()));
@@ -98,11 +97,10 @@ Handler handler = new Handler();
         try {
             this.appWidgetId = appWidgetId;
             JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(context));
-            getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"),context);
+            getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"), context);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
 
 
         LogHelper.e(TAG, "updateAppWidget 진입");
@@ -118,10 +116,10 @@ Handler handler = new Handler();
         /**
          * 새로고침 클릭 시 새로고침 코드 실행(onReceive 콜 함)
          */
-        Intent update = new Intent(context,WidgetProvider.class);
+        Intent update = new Intent(context, WidgetProvider.class);
         update.setAction(CConstants.UPDATE_WIDGET);
-        PendingIntent pendingIntent1 = PendingIntent.getBroadcast(context,0,update,0);
-        updateViews.setOnClickPendingIntent(R.id.btn_sync_widget,pendingIntent1);
+        PendingIntent pendingIntent1 = PendingIntent.getBroadcast(context, 0, update, 0);
+        updateViews.setOnClickPendingIntent(R.id.btn_sync_widget, pendingIntent1);
 
         /**
          * 위젯 업데이트
@@ -169,7 +167,7 @@ Handler handler = new Handler();
      * @param stationName 측정소 이름
      */
     void getStationDetail(final String stationName, final String strAddress, final Context mContext) {
-        LogHelper.e(TAG, "getStationDetail 진입   "+stationName);
+        LogHelper.e(TAG, "getStationDetail 진입   " + stationName);
 
 
         if (stationName != null && !stationName.equals("")) {
@@ -238,7 +236,7 @@ Handler handler = new Handler();
      * @throws JSONException
      * @throws ParseException
      */
-    int  setPMValueUI(Context mContext) throws JSONException, ParseException {
+    int setPMValueUI(Context mContext) throws JSONException, ParseException {
         LogHelper.e(TAG, "setPMValueUI 진입");
 
         if (AppPreference.loadLastMeasureDetail(mContext) == null || AppPreference.loadLastMeasureDetail(mContext).equals(""))
@@ -286,16 +284,16 @@ Handler handler = new Handler();
 
         switch (mainGrade) {
             case 0:
-                updateViews.setImageViewResource(R.id.img_main_widget,R.drawable.ic_status_1);
+                updateViews.setImageViewResource(R.id.img_main_widget, R.drawable.ic_status_1);
                 break;
             case 1:
-                updateViews.setImageViewResource(R.id.img_main_widget,R.drawable.ic_status_2);
+                updateViews.setImageViewResource(R.id.img_main_widget, R.drawable.ic_status_2);
                 break;
             case 2:
-                updateViews.setImageViewResource(R.id.img_main_widget,R.drawable.ic_status_3);
+                updateViews.setImageViewResource(R.id.img_main_widget, R.drawable.ic_status_3);
                 break;
             case 3:
-                updateViews.setImageViewResource(R.id.img_main_widget,R.drawable.ic_status_4);
+                updateViews.setImageViewResource(R.id.img_main_widget, R.drawable.ic_status_4);
                 break;
         }
         updateViews.setTextViewText(R.id.txt_address_widget, AppPreference.loadLastMeasureAddr(mContext));
@@ -303,21 +301,21 @@ Handler handler = new Handler();
         updateViews.setTextViewText(R.id.txt_recommend, Utility.getWholeStr(mainGrade));
         this.mainGrade = mainGrade;
 
-       updateViews.setViewVisibility(R.id.progressBar,View.VISIBLE);
-        updateViews.setViewVisibility(R.id.btn_sync_widget,View.GONE);
+        updateViews.setViewVisibility(R.id.progressBar, View.VISIBLE);
+        updateViews.setViewVisibility(R.id.btn_sync_widget, View.GONE);
 
         appWidgetManager.updateAppWidget(appWidgetId, updateViews);
 
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                LogHelper.e(TAG,"run 진입");
-                updateViews.setViewVisibility(R.id.progressBar,View.GONE);
-                updateViews.setViewVisibility(R.id.btn_sync_widget,View.VISIBLE);
+                LogHelper.e(TAG, "run 진입");
+                updateViews.setViewVisibility(R.id.progressBar, View.GONE);
+                updateViews.setViewVisibility(R.id.btn_sync_widget, View.VISIBLE);
 
                 appWidgetManager.updateAppWidget(appWidgetId, updateViews);
             }
-        },1500);
+        }, 1500);
 
         return mainGrade;
     }
@@ -327,10 +325,10 @@ Handler handler = new Handler();
      *
      * @param mContext
      */
-    void setFailedUi(Context mContext){
+    void setFailedUi(Context mContext) {
         RemoteViews updateViews = new RemoteViews(mContext.getPackageName(), R.layout.layout_widget);
 
-        updateViews.setImageViewResource(R.id.img_main_widget,R.drawable.ic_status_1);
+        updateViews.setImageViewResource(R.id.img_main_widget, R.drawable.ic_status_1);
         updateViews.setTextViewText(R.id.txt_status_main, "정보를 불러오지 못했어요.");
         updateViews.setTextViewText(R.id.txt_recommend, "");
 
