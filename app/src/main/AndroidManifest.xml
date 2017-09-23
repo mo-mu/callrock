@@ -34,7 +34,7 @@
 
         <receiver
             android:name=".widget.WidgetProvider"
-            android:label="위젯 테스트" >
+            android:label="미세한" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

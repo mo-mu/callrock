@@ -97,7 +97,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
         if (!isFromOnUpdate) {       //수동 업데이트인 경우에만 프로그레스 다이얼로그를 보여준다.
             updateViews.setViewVisibility(R.id.progressBar, View.VISIBLE);
-            updateViews.setViewVisibility(R.id.btn_sync_widget, View.GONE);
+            updateViews.setViewVisibility(R.id.sync_default, View.GONE);
         }
         this.appWidgetId = appWidgetId;
 
@@ -138,7 +138,7 @@ public class WidgetProvider extends AppWidgetProvider {
         Intent update = new Intent(context, WidgetProvider.class);
         update.setAction(CConstants.UPDATE_WIDGET);
         PendingIntent pendingIntent1 = PendingIntent.getBroadcast(context, 0, update, 0);
-        updateViews.setOnClickPendingIntent(R.id.btn_sync_widget, pendingIntent1);
+        updateViews.setOnClickPendingIntent(R.id.btn_sync, pendingIntent1);
 
         /**
          * 위젯 업데이트
@@ -270,7 +270,7 @@ public class WidgetProvider extends AppWidgetProvider {
             @Override
             public void run() {
                 updateViews.setViewVisibility(R.id.progressBar, View.GONE);
-                updateViews.setViewVisibility(R.id.btn_sync_widget, View.VISIBLE);
+                updateViews.setViewVisibility(R.id.sync_default, View.VISIBLE);
 
                 appWidgetManager.updateAppWidget(appWidgetId, updateViews);
             }
@@ -351,7 +351,7 @@ public class WidgetProvider extends AppWidgetProvider {
         RemoteViews updateViews = new RemoteViews(mContext.getPackageName(), R.layout.layout_widget);
 
         updateViews.setViewVisibility(R.id.progressBar, View.GONE);
-        updateViews.setViewVisibility(R.id.btn_sync_widget, View.VISIBLE);
+        updateViews.setViewVisibility(R.id.sync_default, View.VISIBLE);
 
         updateViews.setImageViewResource(R.id.img_main_widget, R.drawable.ic_status_1);
         updateViews.setTextViewText(R.id.txt_status_main, "정보를 불러오지 못했어요.");
