@@ -6,8 +6,10 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minWidth="325dp"
-            android:layout_margin="20dp"
+            android:minWidth="300dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:orientation="vertical">
             <TextView
                 android:layout_width="wrap_content"
@@ -15,49 +17,20 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:textSize="19dp"
-                android:text="&quot;미세한&quot; 사용을 위해 &#xA;아래권한을 허용해주세요."/>
+                android:text="&quot;미세한&quot; 사용을 위해 &#xA;아래 권한이 필요해요"/>
 
         <View
             android:layout_width="wrap_content"
             android:layout_height="1dp"
-            android:background="@color/textColor"
-            android:layout_marginTop="30dp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="10dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="17dp"
-                android:text="필수 접근권한" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:text="없음" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-                android:background="@color/textColor"
-                android:layout_marginTop="10dp"/>
+            android:background="#CCCCCC"
+            android:layout_marginTop="20dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_margin="10dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="17dp"
-                    android:text="선택 접근권한"
-                    android:layout_marginBottom="10dp"/>
-                <LinearLayout
+                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -77,7 +50,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="16dp"
                             android:layout_marginBottom="5dp"
-                            android:text="위치" />
+                            android:text="위치 (선택)" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -100,8 +73,9 @@
             android:gravity="center"
             android:textSize="12dp"
             android:layout_marginBottom="15dp"
-            android:layout_marginTop="70dp"
-            android:text="선택접근권한은 동의하지 않아도 &#xA;서비스 사용이 가능합니다"/>
+            android:layout_marginTop="40dp"
+            android:textColor="#AAAAAA"
+            android:text="선택 권한은 동의하지 않아도 서비스 사용이 가능"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="50dp"
