@@ -25,7 +25,7 @@ android {
     compileSdkVersion 26
     buildToolsVersion "26.0.1"
     defaultConfig {
-        applicationId "com.momu.callrock"
+        applicationId "com.momu.misehan"
         minSdkVersion 15
         targetSdkVersion 26
         multiDexEnabled true
@@ -66,6 +66,7 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.7.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.7.0'
     compile 'com.android.support:multidex:1.0.1'
+    apply plugin: 'com.google.gms.google-services'
 
     compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
     compile 'com.android.support:multidex:1.0.1'

@@ -56,7 +56,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
                             android:layout_marginBottom="3dp"
-                            android:text="측정소 위치"
+                            android:text="위치를 검색해주세요"
                             android:textColor="@color/black"
                             android:textSize="21sp"
                             android:textStyle="bold"/>
@@ -69,8 +69,10 @@
 
 
                     <LinearLayout
+                        android:id="@+id/view_refresh"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:visibility="invisible"
                         android:orientation="horizontal">
 
                         <ImageView
@@ -109,7 +111,7 @@
                 android:layout_height="90dp"
                 android:layout_gravity="center"
                 android:adjustViewBounds="true"
-                android:src="@drawable/ic_status_1"/>
+                android:src="@drawable/ic_status_5"/>
 
             <TextView
                 android:id="@+id/txt_status_main"
@@ -128,7 +130,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginBottom="20dp"
-                android:text="마음껏 외출하세요~!"
+                android:text="알 수 없음"
                 android:textSize="16sp"/>
 
 
@@ -294,8 +296,7 @@
                 <TextView
                     android:id="@+id/txt_mask"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="오늘은 마음껏 산책하세요."/>
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
 
             <LinearLayout
@@ -323,8 +324,7 @@
                 <TextView
                     android:id="@+id/txt_activity"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="오늘은 마스크는 필요없겠어요."/>
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
 
             <LinearLayout
@@ -352,8 +352,7 @@
                 <TextView
                     android:id="@+id/txt_life"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="밖으로 고고고"/>
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
 
             <LinearLayout
@@ -381,8 +380,7 @@
                 <TextView
                     android:id="@+id/txt_window"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="밖으로 고고고"/>
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

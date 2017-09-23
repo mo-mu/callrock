@@ -25,7 +25,7 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:src="@drawable/ic_status_1"/>
+            android:src="@drawable/ic_status_5"/>
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:gravity="center"
-                android:text="보통"
+                android:text="알 수 없음"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"/>
@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/txt_status_main"
                 android:gravity="center"
-                android:text=""
+                android:text="위치를 검색해주세요"
                 android:textColor="@color/textColor"
                 android:textSize="12sp"/>
 

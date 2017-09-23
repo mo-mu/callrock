@@ -6,7 +6,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minWidth="300dp"
+            android:minWidth="280dp"
             android:layout_marginTop="20dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
@@ -29,34 +29,36 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_margin="10dp">
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
                  <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                     <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_gravity="center"
                         android:padding="5dp"
-                        android:src="@drawable/ic_pin"/>
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="16dp"
-                            android:layout_marginBottom="5dp"
-                            android:text="위치 (선택)" />
+                        android:src="@drawable/location_btn"/>
+                     <TextView
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:textSize="16dp"
+                     android:layout_gravity="center"
+                     android:text="위치 (선택)" />
+
+                 </LinearLayout>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="현재 위치 검색을 위해 사용합니다."/>
 
-                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -75,7 +77,7 @@
             android:layout_marginBottom="15dp"
             android:layout_marginTop="40dp"
             android:textColor="#AAAAAA"
-            android:text="선택 권한은 동의하지 않아도 서비스 사용이 가능"/>
+            android:text="선택 권한은 동의하지 않아도 서비스 사용 가능"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="50dp"

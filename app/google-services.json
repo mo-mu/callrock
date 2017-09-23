@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "815789996884",
+    "firebase_url": "https://misehan-d3bfe.firebaseio.com",
+    "project_id": "misehan-d3bfe",
+    "storage_bucket": "misehan-d3bfe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:815789996884:android:98dac5e8a08dc6e6",
+        "android_client_info": {
+          "package_name": "com.momu.misehan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "815789996884-anpnhrqim6c38nsime9ubsbotqll9686.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4NYfFNi5qvtQrOV1_-5NloDp_fVlrPfU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
