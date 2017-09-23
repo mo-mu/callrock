@@ -139,13 +139,15 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(mContext));
                     getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"));
 
-                    updateWidget(); //위젯 업데이트
+//                    updateWidget(); //위젯 업데이트
                 } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
+                    updateWidget();
                 }
 
             } else {
                 LogHelper.e(TAG, "측정할 시간이 되지 않아 서버에서 갱신하지 않음, 최근 측정 시간 : " + AppPreference.loadLastMeasureTime(mContext));
+                updateWidget();
             }
 
         } else {
@@ -287,6 +289,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             LogHelper.errorStackTrace(e);
+                            updateWidget();
                         }
                     });
         }
@@ -446,7 +449,7 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject addressObject = jsonArray.getJSONObject(0).getJSONObject("address");
 
                     strAddress = addressObject.getString("region_2depth_name") + " " + addressObject.getString("region_3depth_name");
-                    if(addressObject.getString("region_3depth_name").contains(" "))     // 면, 리 단계의 주소 체계일 경우, 읍, 면까지만 노출시키기 위해 코드 추가
+                    if (addressObject.getString("region_3depth_name").contains(" "))     // 면, 리 단계의 주소 체계일 경우, 읍, 면까지만 노출시키기 위해 코드 추가
                         strAddress = addressObject.getString("region_2depth_name") + " " + addressObject.getString("region_3depth_name").split(" ")[0];
 //                    btnRefresh.setText(strAddress);
                     AppPreference.saveLastMeasureAddr(mContext, strAddress);
@@ -566,6 +569,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         btnRefresh.setText(detailObject.getString("measuredAddress"));
+        updateWidget();
     }
 
     /**
@@ -590,7 +594,7 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(mContext));
                     getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"));
 
-                    updateWidget();     //위젯 업데이트
+//                    updateWidget();     //위젯 업데이트
 
                 } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
@@ -603,20 +607,23 @@ public class MainActivity extends AppCompatActivity {
         } else {        //메인페이지에서 현재 주소 찾을 때
             getLocationData();
 
-            updateWidget();     //위젯 업데이트
+//            updateWidget();     //위젯 업데이트
         }
     }
 
     /**
      * 위젯 업데이트 메소드
-     *
      */
     private void updateWidget() {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this,WidgetProvider.class));
-        if (appWidgetIds.length > 0) {
-            new WidgetProvider().onUpdate(this, appWidgetManager, appWidgetIds);
-        }
+        LogHelper.e(TAG, "updateWidget 진입");
+        Intent updateIntent = new Intent(mContext, WidgetProvider.class);
+        updateIntent.setAction(CConstants.UPDATE_WIDGET);
+        sendBroadcast(updateIntent);
+//        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+//        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
+//        if (appWidgetIds.length > 0) {
+//            new WidgetProvider().onUpdate(this, appWidgetManager, appWidgetIds);
+//        }
     }
 
     /**
@@ -677,9 +684,9 @@ public class MainActivity extends AppCompatActivity {
 
                     boolean showRationale = false;
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                        showRationale = shouldShowRequestPermissionRationale( permissions[1] );
+                        showRationale = shouldShowRequestPermissionRationale(permissions[1]);
                     }
-                    if (! showRationale) {
+                    if (!showRationale) {
                         // user also CHECKED "never ask again"
                         // you can either enable some fall back,
                         // disable features of your app
@@ -704,9 +711,9 @@ public class MainActivity extends AppCompatActivity {
                         });
                         mDialog.show();
 
-                    } else if (Manifest.permission.WRITE_CONTACTS.equals( permissions[1])) {
+                    } else if (Manifest.permission.WRITE_CONTACTS.equals(permissions[1])) {
                         Toast.makeText(mContext, "Hi! 2", Toast.LENGTH_SHORT).show();
-                      //  showRationale( permissions[0], R.string.permission_denied_contacts);
+                        //  showRationale( permissions[0], R.string.permission_denied_contacts);
                         // user did NOT check "never ask again"
                         // this is a good place to explain the user
                         // why you need the permission and ask if he wants
@@ -729,8 +736,7 @@ public class MainActivity extends AppCompatActivity {
             locationY = data.getDoubleExtra("y", -1);
             getStationList(locationX, locationY);
 //            isSearch = true;
-        }
-        else if(requestCode == PERMISSION_SETTING_LOCATION){
+        } else if (requestCode == PERMISSION_SETTING_LOCATION) {
             onResume();
         }
     }
@@ -744,9 +750,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     *  권한 설정으로 이동
+     * 권한 설정으로 이동
      */
-    public void openPermissionPage(){
+    public void openPermissionPage() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         Uri uri = Uri.fromParts("package", getPackageName(), null);
         intent.setData(uri);

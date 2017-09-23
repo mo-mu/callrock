@@ -131,6 +131,7 @@ public class SplashActivity extends AppCompatActivity {
                 LogHelper.e(TAG, "ERROR : " + error.getMessage());
                 if(AppPreference.loadIsFirst(mContext)) {  // 앱 설치 후 퍼미션 설정 페이지 봤을 때
                     openMain();
+
                 }else { // 페이지 안봤을 때
                     PermissionDialog mDialog = new PermissionDialog(mContext);
                     mDialog.setCanceledOnTouchOutside(false);

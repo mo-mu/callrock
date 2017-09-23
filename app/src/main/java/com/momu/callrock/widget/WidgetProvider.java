@@ -91,23 +91,38 @@ public class WidgetProvider extends AppWidgetProvider {
      * @param appWidgetId      해당 위젯 ID
      */
     public void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, boolean isFromOnUpdate) {
+        LogHelper.e(TAG, "updateAppWidget 진입");
+
         RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.layout_widget);
 
         if (!isFromOnUpdate) {       //수동 업데이트인 경우에만 프로그레스 다이얼로그를 보여준다.
             updateViews.setViewVisibility(R.id.progressBar, View.VISIBLE);
             updateViews.setViewVisibility(R.id.btn_sync_widget, View.GONE);
         }
+        this.appWidgetId = appWidgetId;
 
         try {
-            this.appWidgetId = appWidgetId;
-            JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(context));
-            getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"), context);
-        } catch (JSONException e) {
-            e.printStackTrace();
+            if (Utility.shouldRefreshDetail(context)) {
+                LogHelper.e(TAG, "위젯 업데이트 할 시간이 됨, 서버 통신까지함");
+                if (AppPreference.loadIsUseSearchedStation(context)) {      //검색 하여 찾을 때는 측정소 고정
+                    JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(context));
+                    getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"), context);
+
+                } else {    //위치기반일 경우 위치까지 검색해야됨.  지금은 그냥 검색하자.// TODO: 2017. 9. 23.
+                    JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(context));
+                    getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"), context);
+                }
+
+            } else {
+                LogHelper.e(TAG, "위젯 업데이트 할 시간이 아직 안됨 ui만 반영함");
+                setPMValueUI(context);
+            }
+
+        } catch (JSONException | ParseException e) {
+            LogHelper.errorStackTrace(e);
         }
 
 
-        LogHelper.e(TAG, "updateAppWidget 진입");
         //updateViews.setTextViewText(R.id.txt_time_sync_widget, Utility.getTimeFormatFromMillis(AppPreference.loadLastMeasureTime(context)));
 
         /**
@@ -215,7 +230,7 @@ public class WidgetProvider extends AppWidgetProvider {
                                     LogHelper.errorStackTrace(e);
                                     isError = true;
                                 }
-                                if(isError) {
+                                if (isError) {
                                     setFailedUi(mContext);
                                 }
                             }
@@ -247,6 +262,20 @@ public class WidgetProvider extends AppWidgetProvider {
      */
     int setPMValueUI(Context mContext) throws JSONException, ParseException {
         LogHelper.e(TAG, "setPMValueUI 진입");
+
+        final RemoteViews updateViews = new RemoteViews(mContext.getPackageName(), R.layout.layout_widget);
+
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateViews.setViewVisibility(R.id.progressBar, View.GONE);
+                updateViews.setViewVisibility(R.id.btn_sync_widget, View.VISIBLE);
+
+                appWidgetManager.updateAppWidget(appWidgetId, updateViews);
+            }
+        }, 1500);
+
 
         if (AppPreference.loadLastMeasureDetail(mContext) == null || AppPreference.loadLastMeasureDetail(mContext).equals(""))
             return -1;
@@ -289,7 +318,7 @@ public class WidgetProvider extends AppWidgetProvider {
         /**
          * 위젯 ui 수정하는 부분
          */
-        final RemoteViews updateViews = new RemoteViews(mContext.getPackageName(), R.layout.layout_widget);
+
 
         switch (mainGrade) {
             case 0:
@@ -309,9 +338,6 @@ public class WidgetProvider extends AppWidgetProvider {
         updateViews.setTextViewText(R.id.txt_status_main, Utility.getGradeStr(mainGrade));
         updateViews.setTextViewText(R.id.txt_recommend, Utility.getWholeStr(mainGrade));
         this.mainGrade = mainGrade;
-
-        updateViews.setViewVisibility(R.id.progressBar, View.GONE);
-        updateViews.setViewVisibility(R.id.btn_sync_widget, View.VISIBLE);
 
         appWidgetManager.updateAppWidget(appWidgetId, updateViews);
 
