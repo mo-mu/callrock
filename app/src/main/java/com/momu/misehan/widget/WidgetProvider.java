@@ -79,8 +79,8 @@ public class WidgetProvider extends AppWidgetProvider {
 
         this.appWidgetManager = appWidgetManager;
         appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, getClass()));
-        for (int i = 0; i < appWidgetIds.length; i++) {
 
+        for (int i = 0; i < appWidgetIds.length; i++) {
             updateAppWidget(context, appWidgetManager, appWidgetIds[i], true);
         }
     }
@@ -124,14 +124,13 @@ public class WidgetProvider extends AppWidgetProvider {
             LogHelper.errorStackTrace(e);
         }
 
-
         //updateViews.setTextViewText(R.id.txt_time_sync_widget, Utility.getTimeFormatFromMillis(AppPreference.loadLastMeasureTime(context)));
 
         /**
          * 레이아웃을 클릭하면 앱 실행
          */
         Intent intent = new Intent(context, SplashActivity.class);
-        intent.putExtra("where","widget");
+        intent.putExtra("where", "widget");
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
         updateViews.setOnClickPendingIntent(R.id.layout_widget_body, pendingIntent);
 
@@ -190,7 +189,6 @@ public class WidgetProvider extends AppWidgetProvider {
      */
     void getStationDetail(final String stationName, final String strAddress, final Context mContext) {
         LogHelper.e(TAG, "getStationDetail 진입   " + stationName);
-
 
         if (stationName != null && !stationName.equals("")) {
             RequestQueue queue = Volley.newRequestQueue(mContext);
@@ -259,7 +257,6 @@ public class WidgetProvider extends AppWidgetProvider {
     /**
      * 메인화면에 초미세먼지, 미세먼지 관련 UI 업데이트
      *
-     * @param mContext
      * @throws JSONException
      * @throws ParseException
      */
@@ -360,9 +357,8 @@ public class WidgetProvider extends AppWidgetProvider {
         updateViews.setViewVisibility(R.id.sync_default, View.VISIBLE);
 
         updateViews.setImageViewResource(R.id.img_main_widget, R.drawable.ic_status_1);
-        updateViews.setTextViewText(R.id.txt_status_main, "정보를 불러오지 못했어요.");
-        updateViews.setTextViewText(R.id.txt_recommend, "");
-
+        updateViews.setTextViewText(R.id.txt_recommend, "정보를 불러오지 못했어요.");
+        updateViews.setTextViewText(R.id.txt_status_main, "");
 
         appWidgetManager.updateAppWidget(appWidgetId, updateViews);
     }
