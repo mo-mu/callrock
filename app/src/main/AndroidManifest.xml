@@ -14,6 +14,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.
+     See README(https://goo.gl/l4GJaQ) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/noti_icon" />
+        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+
 
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
@@ -50,7 +61,13 @@
             android:value="2295d3c877f2c4d1bdf03e12c16fbbddd309e5e4"
             />
 
-        <service android:name=".FCMservice">
+        <service android:name=".service.FCMservice">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <service android:name=".service.FCMIdService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>

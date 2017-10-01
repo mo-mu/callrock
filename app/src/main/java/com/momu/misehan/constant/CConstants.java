@@ -77,4 +77,9 @@ public class CConstants {
      * 나눔Squarer(?) 폰트
      */
     public static final String FONT_NANUM_SQUAR = "fonts/NANUMSQUARER.TTF";
+
+    /**
+     * 노티 channel ID
+     */
+    public static String default_notification_channel_id = "misehan_noti";
 }

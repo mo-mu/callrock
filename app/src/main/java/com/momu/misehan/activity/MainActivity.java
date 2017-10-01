@@ -40,6 +40,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.momu.misehan.service.FCMIdService;
 import com.momu.misehan.R;
 import com.momu.misehan.constant.CConstants;
 import com.momu.misehan.dialog.DenyPmsDialog;
@@ -656,6 +657,7 @@ public class MainActivity extends AppCompatActivity {
      */
     @OnClick(R.id.container_refresh)
     void btnRefreshClick() {
+        new FCMIdService().onTokenRefresh();
         Bundle bundle = new Bundle();
         bundle.putString("where", "btnRefresh");
         mFirebaseAnalytics.logEvent("update_click", bundle);
