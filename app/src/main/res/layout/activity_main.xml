@@ -817,15 +817,15 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="앱버전 "
+                    android:text="앱 버전"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
 
                 <TextView
+                    android:id="@+id/txt_drawer_version"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
-                    android:text="1.0"
                     android:textSize="16sp"/>
             </FrameLayout>
 

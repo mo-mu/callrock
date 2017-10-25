@@ -1,23 +1,35 @@
 package com.momu.misehan.widget;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.momu.misehan.R;
+import com.momu.misehan.activity.MainActivity;
 import com.momu.misehan.activity.SplashActivity;
 import com.momu.misehan.constant.CConstants;
 import com.momu.misehan.preference.AppPreference;
@@ -31,6 +43,8 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.google.android.gms.internal.zzagz.runOnUiThread;
 
@@ -40,7 +54,7 @@ import static com.google.android.gms.internal.zzagz.runOnUiThread;
  */
 
 public class WidgetProvider extends AppWidgetProvider {
-    private static final String TAG = "WidgetProvider";
+
     int pm10Grade, pm25Grade;
     int mainGrade = -1;
     int appWidgetId;
@@ -49,6 +63,13 @@ public class WidgetProvider extends AppWidgetProvider {
     AppWidgetManager appWidgetManager;
     private FirebaseAnalytics mFirebaseAnalytics;
 
+    private FusedLocationProviderClient mFusedLocationClient;
+
+    double locationX, locationY;
+    String nearestStationName = null;
+
+    private static final String TAG = "WidgetProvider";
+
     /**
      * 브로드캐스트를 수신할때, override된 콜백 메소드가 호출되기 직전에 호출됨
      */
@@ -56,6 +77,9 @@ public class WidgetProvider extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
         LogHelper.e(TAG, "onReceive 진입");
+
+        if (mFusedLocationClient == null)
+            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
 
         if (CConstants.UPDATE_WIDGET.equals(intent.getAction())) {    //위젯의 업데이트 버튼 클릭 시 동작하는 부분
 
@@ -73,8 +97,7 @@ public class WidgetProvider extends AppWidgetProvider {
      * 주의 : Configure Activity를 정의했을때는 위젯 등록시 처음 한번은 호출이 되지 않습니다
      */
     @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager,
-                         int[] appWidgetIds) {
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
 
         this.appWidgetManager = appWidgetManager;
@@ -97,9 +120,11 @@ public class WidgetProvider extends AppWidgetProvider {
 
         RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.layout_widget);
 
-        if (!isFromOnUpdate) {       //수동 업데이트인 경우에만 프로그레스 다이얼로그를 보여준다.
+        if (!isFromOnUpdate) {       //수동 업데이트인 경우에만 위치정보를 처음부터 갱신하고 프로그레스 다이얼로그를 보여준다.
             updateViews.setViewVisibility(R.id.progressBar, View.VISIBLE);
             updateViews.setViewVisibility(R.id.sync_default, View.GONE);
+
+            getLocationData(context);
         }
         this.appWidgetId = appWidgetId;
 
@@ -129,7 +154,7 @@ public class WidgetProvider extends AppWidgetProvider {
         /**
          * 레이아웃을 클릭하면 앱 실행
          */
-        Intent intent = new Intent(context, SplashActivity.class);
+        Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra("where", "widget");
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
         updateViews.setOnClickPendingIntent(R.id.layout_widget_body, pendingIntent);
@@ -217,7 +242,6 @@ public class WidgetProvider extends AppWidgetProvider {
                                     AppPreference.saveLastMeasureDetail(mContext, stationDetailObject.toString());
                                     AppPreference.saveLastMeasureTime(mContext, stationDetailObject.getString("dataTime"));  //측정한 시간 저장
 
-
                                     try {
                                         setPMValueUI(mContext);
                                     } catch (ParseException e) {
@@ -231,6 +255,7 @@ public class WidgetProvider extends AppWidgetProvider {
                                     LogHelper.errorStackTrace(e);
                                     isError = true;
                                 }
+
                                 if (isError) {
                                     setFailedUi(mContext);
                                 }
@@ -318,8 +343,6 @@ public class WidgetProvider extends AppWidgetProvider {
         /**
          * 위젯 ui 수정하는 부분
          */
-
-
         switch (mainGrade) {
             case 0:
                 updateViews.setImageViewResource(R.id.img_main_widget, R.drawable.ic_status_1);
@@ -337,6 +360,7 @@ public class WidgetProvider extends AppWidgetProvider {
                 updateViews.setImageViewResource(R.id.img_main_widget, R.drawable.ic_status_5);
                 break;
         }
+
         updateViews.setTextViewText(R.id.txt_address_widget, AppPreference.loadLastMeasureAddr(mContext));
         updateViews.setTextViewText(R.id.txt_status_main, Utility.getGradeStr(mainGrade));
         updateViews.setTextViewText(R.id.txt_recommend, Utility.getWholeStr(mainGrade));
@@ -361,5 +385,155 @@ public class WidgetProvider extends AppWidgetProvider {
         updateViews.setTextViewText(R.id.txt_status_main, "");
 
         appWidgetManager.updateAppWidget(appWidgetId, updateViews);
+    }
+
+    /**
+     * 현재 위치정보를 받아옴 (권한요청은 하지 않음)
+     */
+    public void getLocationData(final Context mContext) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            LogHelper.e(TAG, "위치 권한 주어지지 않음");
+
+        } else {    //위치 정보 권한 있음
+            LogHelper.e(TAG, "위치 권한 주어짐");
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                // ...
+                                Double locationX = location.getLongitude();
+                                Double locationY = location.getLatitude();
+                                LogHelper.e(TAG, "위치정보 : " + locationX + ", " + locationY);
+//                            locationX = 126.9004613;
+//                            locationY = 37.5347978;
+
+                                getStationList(mContext, locationX, locationY);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            LogHelper.errorStackTrace(e);
+                            //현재 위치 못 받아옴.
+                        }
+                    });
+        }
+    }
+
+    /**
+     * 위치정보(longitude, latitude)를 이용하여 서버에서 측정소 정보를 가져온다.
+     *
+     * @param geoX 위치정보(x좌표, longitude)
+     * @param geoY 위치정보(y좌표, latitude)
+     */
+
+    private void getStationList(final Context mContext, final double geoX, final double geoY) {
+        final RequestQueue queue = Volley.newRequestQueue(mContext);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, String.format(CConstants.URL_KAKAO_GEO_TRANSCOORD, String.valueOf(geoX), String.valueOf(geoY)), null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONArray jsonArray = response.getJSONArray("documents");
+                    LogHelper.e(TAG, "getStationList : " + jsonArray.toString());
+                    double tmX = jsonArray.getJSONObject(0).getDouble("x");
+                    double tmY = jsonArray.getJSONObject(0).getDouble("y");
+
+                    JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, CConstants.URL_STATION_LIST_BY_GEO + "tmX=" + tmX + "&tmY=" + tmY, null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                JSONArray jsonArray = response.getJSONArray("list");
+                                LogHelper.e(TAG, "URL_STATION_LIST_BY_GEO : " + jsonArray.toString());
+
+                                nearestStationName = jsonArray.getJSONObject(0).getString("stationName");
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        getAddressFromCoord(mContext, geoX, geoY);
+                                    }
+                                });
+
+                            } catch (JSONException e) {
+                                LogHelper.errorStackTrace(e);
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            LogHelper.e(TAG, "ERROR : " + error.getMessage());
+                        }
+                    });
+                    queue.add(jsonRequest);
+
+
+                } catch (Exception e) {
+                    LogHelper.errorStackTrace(e);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                LogHelper.e(TAG, "ERROR : " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Authorization", "KakaoAK e8695fade4aae0be4d1609c102af6a8b");
+                return params;
+            }
+        };
+        queue.add(request);
+    }
+
+    /**
+     * 카카오 REST_API에서 좌표정보를 지도정보로 변환 후 메인 상단에 보여줌.
+     *
+     * @param geoX longitude
+     * @param geoY latitude
+     */
+    void getAddressFromCoord(final Context mContext, double geoX, double geoY) {
+        RequestQueue queue = Volley.newRequestQueue(mContext);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, String.format(CConstants.URL_KAKAO_GEO_COORD2ADDRESS, String.valueOf(geoX), String.valueOf(geoY)), null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                String strAddress;
+                try {
+                    JSONArray jsonArray = response.getJSONArray("documents");
+                    LogHelper.e(TAG, "URL_KAKAO_GEO_COORD2ADDRESS : " + jsonArray.toString());
+                    JSONObject addressObject = jsonArray.getJSONObject(0).getJSONObject("address");
+
+                    strAddress = addressObject.getString("region_2depth_name") + " " + addressObject.getString("region_3depth_name");
+                    if (addressObject.getString("region_3depth_name").contains(" "))     // 면, 리 단계의 주소 체계일 경우, 읍, 면까지만 노출시키기 위해 코드 추가
+                        strAddress = addressObject.getString("region_2depth_name") + " " + addressObject.getString("region_3depth_name").split(" ")[0];
+
+                    AppPreference.saveLastMeasureAddr(mContext, strAddress);
+                } catch (Exception e) {
+                    LogHelper.errorStackTrace(e);
+                    strAddress = "현재 주소 알수없음";
+                }
+                getStationDetail(nearestStationName, strAddress, mContext);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                LogHelper.e(TAG, "ERROR : " + error.getMessage());
+//                btnRefresh.setText("주소 알수없음");    //// TODO: 2017. 10. 26. 주소 알수없을 경우 처리 넣을것
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "KakaoAK e8695fade4aae0be4d1609c102af6a8b");
+                return params;
+            }
+        };
+        queue.add(request);
     }
 }

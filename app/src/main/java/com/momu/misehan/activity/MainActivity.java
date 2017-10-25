@@ -40,6 +40,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.momu.misehan.BuildConfig;
 import com.momu.misehan.service.FCMIdService;
 import com.momu.misehan.R;
 import com.momu.misehan.constant.CConstants;
@@ -94,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.txt_window) TextView txtWindow;
     @BindView(R.id.img_refresh) ImageView refreshImg;
     @BindView(R.id.view_refresh) LinearLayout refreshView;
+    @BindView(R.id.txt_drawer_version) TextView txtVersion;
 
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -125,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
         initView();
         initDrawer();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
 
         if (AppPreference.loadIsUseSearchedStation(mContext) && !AppPreference.loadLastMeasureStation(mContext).equals("")) {       //검색한 위치 이용하는 경우
             if (Utility.shouldRefreshDetail(mContext)) {         //최근 갱신한 시간을 불러와서 갱신할지 여부 확인
@@ -239,6 +240,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        txtVersion.setText(BuildConfig.VERSION_NAME);
     }
 
     /**
@@ -292,13 +295,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-
     /**
      * 위치정보(longitude, latitude)를 이용하여 서버에서 측정소 정보를 가져온다.
      *
@@ -329,8 +325,6 @@ public class MainActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-//                                        Toast.makeText(mContext, "가장 가까운 측정소는 " + nearestStationName + " 측정소 입니다.", Toast.LENGTH_LONG).show();
-//                                        getStationDetail(nearestStationName);
                                         getAddressFromCoord(geoX, geoY);
                                     }
                                 });
@@ -448,12 +442,11 @@ public class MainActivity extends AppCompatActivity {
                     strAddress = addressObject.getString("region_2depth_name") + " " + addressObject.getString("region_3depth_name");
                     if (addressObject.getString("region_3depth_name").contains(" "))     // 면, 리 단계의 주소 체계일 경우, 읍, 면까지만 노출시키기 위해 코드 추가
                         strAddress = addressObject.getString("region_2depth_name") + " " + addressObject.getString("region_3depth_name").split(" ")[0];
-//                    btnRefresh.setText(strAddress);
+
                     AppPreference.saveLastMeasureAddr(mContext, strAddress);
                 } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
                     strAddress = "현재 주소 알수없음";
-//                    btnRefresh.setText("현재 주소 알수없음");
                 }
                 getStationDetail(nearestStationName, strAddress);
             }
@@ -531,7 +524,7 @@ public class MainActivity extends AppCompatActivity {
         Date d = sdf.parse(dataTime);
         sdf.applyPattern(NEW_FORMAT);
         newDateString = sdf.format(d);
-        txtSyncTime.setText(newDateString + "업데이트됨");
+        txtSyncTime.setText(newDateString + " 업데이트 됨");
 
         int mainGrade;  //메인페이지에 표시할 기준 등급, 높은 등급을 기준으로 보여준다.
 
@@ -577,24 +570,19 @@ public class MainActivity extends AppCompatActivity {
      * 검색 버튼 클릭 이벤트
      */
     public void btnSearchClick() {
-        Animation a = new RotateAnimation(0.0f, 360.0f,
-                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
-                0.5f);
+        Animation a = new RotateAnimation(0.0f, 360.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         a.setRepeatCount(2);
         a.setDuration(1000);
         refreshImg.startAnimation(a);
 
 
         if (AppPreference.loadIsUseSearchedStation(mContext)) {      //검색 하여 찾을 때
-//            getStationList(locationX, locationY);
             if (Utility.shouldRefreshDetail(mContext)) {         //최근 갱신한 시간을 불러와서 갱신할지 여부 확인
                 LogHelper.e(TAG, "측정할 시간이 되어 서버에서 갱신, 최근 측정 시간 : " + AppPreference.loadLastMeasureTime(mContext));
 
                 try {
                     JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(mContext));
                     getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"));
-
-//                    updateWidget();     //위젯 업데이트
 
                 } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
@@ -607,7 +595,6 @@ public class MainActivity extends AppCompatActivity {
         } else {        //메인페이지에서 현재 주소 찾을 때
             getLocationData();
 
-//            updateWidget();     //위젯 업데이트
         }
     }
 
@@ -619,11 +606,6 @@ public class MainActivity extends AppCompatActivity {
         Intent updateIntent = new Intent(mContext, WidgetProvider.class);
         updateIntent.setAction(CConstants.UPDATE_WIDGET);
         sendBroadcast(updateIntent);
-//        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-//        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
-//        if (appWidgetIds.length > 0) {
-//            new WidgetProvider().onUpdate(this, appWidgetManager, appWidgetIds);
-//        }
     }
 
 
@@ -766,7 +748,7 @@ public class MainActivity extends AppCompatActivity {
             locationX = data.getDoubleExtra("x", -1);
             locationY = data.getDoubleExtra("y", -1);
             getStationList(locationX, locationY);
-//            isSearch = true;
+
         } else if (requestCode == PERMISSION_SETTING_LOCATION) {
             onResume();
         }
