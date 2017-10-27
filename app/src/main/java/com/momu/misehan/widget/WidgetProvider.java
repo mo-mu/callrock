@@ -100,6 +100,9 @@ public class WidgetProvider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
 
+        if (mFusedLocationClient == null)
+            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
+
         this.appWidgetManager = appWidgetManager;
         appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, getClass()));
 
@@ -120,29 +123,27 @@ public class WidgetProvider extends AppWidgetProvider {
 
         RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.layout_widget);
 
-        if (!isFromOnUpdate) {       //수동 업데이트인 경우에만 위치정보를 처음부터 갱신하고 프로그레스 다이얼로그를 보여준다.
+        if (!isFromOnUpdate) {       //수동 업데이트인 경우에만 프로그레스 다이얼로그를 보여준다.
             updateViews.setViewVisibility(R.id.progressBar, View.VISIBLE);
             updateViews.setViewVisibility(R.id.sync_default, View.GONE);
-
-            getLocationData(context);
         }
         this.appWidgetId = appWidgetId;
 
         try {
-            if (Utility.shouldRefreshDetail(context)) {
-                LogHelper.e(TAG, "위젯 업데이트 할 시간이 됨, 서버 통신까지함");
-                if (AppPreference.loadIsUseSearchedStation(context)) {      //검색 하여 찾을 때는 측정소 고정
+            if (AppPreference.loadIsUseSearchedStation(context)) {     //검색 하여 찾을 때는 측정소 고정
+                LogHelper.e(TAG, "검색한 고정 위치로 검색");
+                if (Utility.shouldRefreshDetail(context)) {
+                    LogHelper.e(TAG, "위젯 업데이트 할 시간이 됨, 서버 통신까지함");
                     JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(context));
                     getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"), context);
 
-                } else {    //위치기반일 경우 위치까지 검색해야됨.  지금은 그냥 검색하자.// TODO: 2017. 9. 23.
-                    JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(context));
-                    getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"), context);
+                } else {
+                    LogHelper.e(TAG, "위젯 업데이트 할 시간이 아직 안됨 ui만 반영함");
+                    setPMValueUI(context);
                 }
-
-            } else {
-                LogHelper.e(TAG, "위젯 업데이트 할 시간이 아직 안됨 ui만 반영함");
-                setPMValueUI(context);
+            } else {    //위치기반일 경우 위치까지 검색해야됨, 시간 상관없이 항상 검색
+                LogHelper.e(TAG, "위치 기반으로 검색");
+                getLocationData(context);
             }
 
         } catch (JSONException | ParseException e) {
@@ -394,6 +395,7 @@ public class WidgetProvider extends AppWidgetProvider {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             LogHelper.e(TAG, "위치 권한 주어지지 않음");
+            setFailedUi(mContext);
 
         } else {    //위치 정보 권한 있음
             LogHelper.e(TAG, "위치 권한 주어짐");
@@ -419,6 +421,7 @@ public class WidgetProvider extends AppWidgetProvider {
                         public void onFailure(@NonNull Exception e) {
                             LogHelper.errorStackTrace(e);
                             //현재 위치 못 받아옴.
+                            setFailedUi(mContext);
                         }
                     });
         }
@@ -460,12 +463,14 @@ public class WidgetProvider extends AppWidgetProvider {
 
                             } catch (JSONException e) {
                                 LogHelper.errorStackTrace(e);
+                                setFailedUi(mContext);
                             }
                         }
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             LogHelper.e(TAG, "ERROR : " + error.getMessage());
+                            setFailedUi(mContext);
                         }
                     });
                     queue.add(jsonRequest);
@@ -473,12 +478,14 @@ public class WidgetProvider extends AppWidgetProvider {
 
                 } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
+                    setFailedUi(mContext);
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 LogHelper.e(TAG, "ERROR : " + error.getMessage());
+                setFailedUi(mContext);
             }
         }) {
             @Override
@@ -514,17 +521,18 @@ public class WidgetProvider extends AppWidgetProvider {
                         strAddress = addressObject.getString("region_2depth_name") + " " + addressObject.getString("region_3depth_name").split(" ")[0];
 
                     AppPreference.saveLastMeasureAddr(mContext, strAddress);
+                    getStationDetail(nearestStationName, strAddress, mContext);
                 } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
-                    strAddress = "현재 주소 알수없음";
+                    setFailedUi(mContext);
                 }
-                getStationDetail(nearestStationName, strAddress, mContext);
+
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 LogHelper.e(TAG, "ERROR : " + error.getMessage());
-//                btnRefresh.setText("주소 알수없음");    //// TODO: 2017. 10. 26. 주소 알수없을 경우 처리 넣을것
+                setFailedUi(mContext);
             }
         }) {
             @Override

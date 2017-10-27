@@ -592,7 +592,7 @@ public class MainActivity extends AppCompatActivity {
                 LogHelper.e(TAG, "측정할 시간이 되지 않아 서버에서 갱신하지 않음, 최근 측정 시간 : " + AppPreference.loadLastMeasureTime(mContext));
                 Toast.makeText(mContext, "미세먼지 정보가 갱신되었습니다.", Toast.LENGTH_SHORT).show();   //사용자에게는 갱신되었다고 보여줌
             }
-        } else {        //메인페이지에서 현재 주소 찾을 때
+        } else {        //메인페이지에서 현재 주소 찾을 때에는 시간 상관없이 항상 검색.
             getLocationData();
 
         }
