@@ -20,6 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.crashlytics.android.Crashlytics;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.momu.misehan.R;
 import com.momu.misehan.constant.CConstants;
 import com.momu.misehan.dialog.PermissionDialog;
@@ -40,11 +41,14 @@ import io.fabric.sdk.android.Fabric;
  */
 public class SplashActivity extends AppCompatActivity {
 
-    private static final String TAG = "SplashActivity";
     private Context mContext;
 
     @BindView(R.id.txtTitle) TextView txtTitle;
     @BindView(R.id.animation_view) LottieAnimationView animationView;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
+
+    private static final String TAG = "SplashActivity";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,7 +58,6 @@ public class SplashActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mContext = this;
 
-
         Typeface typeFace1 = Typeface.createFromAsset(getAssets(), CConstants.FONT_NANUM_MYEONGJO);
         txtTitle.setTypeface(typeFace1);
 
@@ -63,10 +66,10 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(AppPreference.loadIsFirst(mContext)) {  // 앱 설치 후 퍼미션 설정 페이지 봤을 때
+                if (AppPreference.loadIsFirst(mContext)) {  // 앱 설치 후 퍼미션 설정 페이지 봤을 때
 
                     openMain();
-                }else { // 페이지 안봤을 때
+                } else { // 페이지 안봤을 때
 
                     PermissionDialog mDialog = new PermissionDialog(mContext);
                     mDialog.setCanceledOnTouchOutside(false);
@@ -97,7 +100,8 @@ public class SplashActivity extends AppCompatActivity {
         final SharedPreferences preferences = getSharedPreferences("Pref", MODE_PRIVATE);
         final SharedPreferences.Editor editor = preferences.edit();
 
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, CConstants.URL_STATION_INFO, null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, CConstants.URL_STATION_INFO, null,
+                new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
@@ -130,10 +134,10 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 LogHelper.e(TAG, "ERROR : " + error.getMessage());
-                if(AppPreference.loadIsFirst(mContext)) {  // 앱 설치 후 퍼미션 설정 페이지 봤을 때
+                if (AppPreference.loadIsFirst(mContext)) {  // 앱 설치 후 퍼미션 설정 페이지 봤을 때
                     openMain();
 
-                }else { // 페이지 안봤을 때
+                } else { // 페이지 안봤을 때
                     PermissionDialog mDialog = new PermissionDialog(mContext);
                     mDialog.setCanceledOnTouchOutside(false);
                     mDialog.setCancelable(false);
@@ -158,7 +162,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     /**
-     * main Activity 여는 메소드
+     * MainActivity 진입
      */
     public void openMain() {
         Bundle bundle = new Bundle();
@@ -170,11 +174,12 @@ public class SplashActivity extends AppCompatActivity {
                 bundle.putString("gotoMain", "inWidget");
                 LogHelper.e(TAG, "inWidget");
             }
-        }catch (Exception e){
-            LogHelper.e(TAG,e.toString());
+            mFirebaseAnalytics.logEvent("gotoMain", bundle);
+        } catch (Exception e) {
+            LogHelper.e(TAG, e.toString());
         }
         startActivity(new Intent(SplashActivity.this, MainActivity.class));
-        AppPreference.saveIsFirst(mContext,true);
+        AppPreference.saveIsFirst(mContext, true);
         finish();
     }
 }
