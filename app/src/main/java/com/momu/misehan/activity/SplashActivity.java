@@ -20,7 +20,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.crashlytics.android.Crashlytics;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.momu.misehan.R;
 import com.momu.misehan.constant.CConstants;
 import com.momu.misehan.dialog.PermissionDialog;
@@ -47,7 +46,6 @@ public class SplashActivity extends AppCompatActivity {
     @BindView(R.id.txtTitle) TextView txtTitle;
     @BindView(R.id.animation_view) LottieAnimationView animationView;
 
-    private FirebaseAnalytics mFirebaseAnalytics;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -172,7 +170,6 @@ public class SplashActivity extends AppCompatActivity {
                 bundle.putString("gotoMain", "inWidget");
                 LogHelper.e(TAG, "inWidget");
             }
-            mFirebaseAnalytics.logEvent("gotoMain", bundle);
         }catch (Exception e){
             LogHelper.e(TAG,e.toString());
         }

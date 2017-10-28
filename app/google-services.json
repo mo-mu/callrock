@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "815789996884-n9jpsj69bv9c2241e9s6cspri6ccq9rq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.momu.misehan",
+            "certificate_hash": "53f3351fceec88fd87750781e44e947404811542"
+          }
+        },
+        {
           "client_id": "815789996884-anpnhrqim6c38nsime9ubsbotqll9686.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "815789996884-anpnhrqim6c38nsime9ubsbotqll9686.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

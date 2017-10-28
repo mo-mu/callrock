@@ -13,12 +13,19 @@ public class FCMIdService extends FirebaseInstanceIdService  {
 
     private static final String TAG = "FCMIdService";
 
+    public FCMIdService(){
+        LogHelper.e(TAG,"HI");
+    }
     @Override
     public void onTokenRefresh() {
         super.onTokenRefresh();
 
-
-        String refreshToken = FirebaseInstanceId.getInstance().getToken();
-        LogHelper.e(TAG, refreshToken);
+        try {
+            String refreshToken = FirebaseInstanceId.getInstance().getToken();
+            if (refreshToken != null)
+                LogHelper.e(TAG, refreshToken);
+        }catch (Exception e){
+            LogHelper.e(TAG, e.getMessage());
+        }
     }
 }

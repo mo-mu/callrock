@@ -43,6 +43,7 @@ android {
         jumboMode true
         javaMaxHeapSize "4g"
     }
+
 }
 
 dependencies {
@@ -68,7 +69,6 @@ dependencies {
     apply plugin: 'com.google.gms.google-services'
 
     compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
-    compile 'com.android.support:multidex:1.0.1'
     compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true;
     }
@@ -78,3 +78,6 @@ dependencies {
     compile 'com.airbnb.android:lottie:2.2.5'
 }
 
+
+// ADD THIS AT THE BOTTOM
+apply plugin: 'com.google.gms.google-services'
