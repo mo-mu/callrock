@@ -61,7 +61,6 @@ public class WidgetProvider extends AppWidgetProvider {
     Handler handler = new Handler();
 
     AppWidgetManager appWidgetManager;
-    private FirebaseAnalytics mFirebaseAnalytics;
 
     private FusedLocationProviderClient mFusedLocationClient;
 
@@ -141,9 +140,14 @@ public class WidgetProvider extends AppWidgetProvider {
                     LogHelper.e(TAG, "위젯 업데이트 할 시간이 아직 안됨 ui만 반영함");
                     setPMValueUI(context);
                 }
-            } else {    //위치기반일 경우 위치까지 검색해야됨, 시간 상관없이 항상 검색
-                LogHelper.e(TAG, "위치 기반으로 검색");
-                getLocationData(context);
+            } else {    //위치기반일 경우 위치까지 검색해야됨, 수동으로 누른 경우에는 시간 상관없이 항상 검색
+                if (!isFromOnUpdate || Utility.shouldRefreshDetail(context)) {
+                    LogHelper.e(TAG, "위치 기반으로 검색");
+                    getLocationData(context);
+                } else {
+                    LogHelper.e(TAG, "위젯 업데이트 할 시간이 아직 안됨 ui만 반영함");
+                    setPMValueUI(context);
+                }
             }
 
         } catch (JSONException | ParseException e) {
@@ -413,6 +417,8 @@ public class WidgetProvider extends AppWidgetProvider {
 //                            locationY = 37.5347978;
 
                                 getStationList(mContext, locationX, locationY);
+                            } else {
+                                setFailedUi(mContext);
                             }
                         }
                     })

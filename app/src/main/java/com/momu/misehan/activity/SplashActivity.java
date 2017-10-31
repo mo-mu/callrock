@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -45,8 +44,6 @@ public class SplashActivity extends AppCompatActivity {
 
     @BindView(R.id.txtTitle) TextView txtTitle;
     @BindView(R.id.animation_view) LottieAnimationView animationView;
-
-    private FirebaseAnalytics mFirebaseAnalytics;
 
     private static final String TAG = "SplashActivity";
 
@@ -174,7 +171,6 @@ public class SplashActivity extends AppCompatActivity {
                 bundle.putString("gotoMain", "inWidget");
                 LogHelper.e(TAG, "inWidget");
             }
-            mFirebaseAnalytics.logEvent("gotoMain", bundle);
         } catch (Exception e) {
             LogHelper.e(TAG, e.toString());
         }

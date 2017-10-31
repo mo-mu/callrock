@@ -55,7 +55,7 @@ public class CConstants {
     /**
      * main에서 permission setting페이지로 request 할 때 값
      */
-    public static final int PERMISSION_SETTING_LOCATION = 1002;
+    public static final int RESULT_PERMISSION_LOCATION_SETTINGS = 1002;
 
     /**
      * search에서 main으로 result 값을 던져줄 때 값

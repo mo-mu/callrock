@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.view.KeyEvent;
@@ -66,8 +68,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.fabric.sdk.android.Fabric;
 
-import static com.momu.misehan.constant.CConstants.PERMISSION_SETTING_LOCATION;
-
 /**
  * 메인화면
  */
@@ -108,13 +108,14 @@ public class MainActivity extends AppCompatActivity {
 
     int pm10Grade, pm25Grade;
 
-    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 11;  //위치정보 권한 확인
+    private static final int RESULT_PERMISSIONS_LOCATION = 11;  //위치정보 권한 확인
+    private static final int RESULT_LOCATION_SETTINGS = 12;     //위치정보 설정 확인
 
 //    JSONObject stationDetailObject = null;      //측정소에서 측정한 미세먼지 정보
 
-    private static final String TAG = "MainActivity";
-
 //    public boolean isSearch = false;
+
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -252,19 +253,16 @@ public class MainActivity extends AppCompatActivity {
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             LogHelper.e(TAG, "위치 권한 주어지지 않음");
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.READ_CONTACTS)) {
 
-                LogHelper.e(TAG, "권한 확인 1");
 
-            } else {
-                LogHelper.e(TAG, "권한 확인 2");
+            // No explanation needed, we can request the permission.
+            ActivityCompat.requestPermissions(MainActivity.this
+                    , new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}
+                    , RESULT_PERMISSIONS_LOCATION);
+            return;
 
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(MainActivity.this
-                        , new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}
-                        , MY_PERMISSIONS_REQUEST_LOCATION);
-                return;
-            }
+        } else if (!isLocationServiceEnabled()) {       //위치 정보 권한은 있지만 위치 설정은 꺼놓음
+            showLocationSettingDialog();
 
         } else {    //위치 정보 권한 있음
             LogHelper.e(TAG, "위치 권한 주어짐");
@@ -282,6 +280,8 @@ public class MainActivity extends AppCompatActivity {
 //                            locationY = 37.5347978;
 
                                 getStationList(locationX, locationY);
+                            } else {
+                                LogHelper.e(TAG, "location is null");
                             }
                         }
                     })
@@ -682,7 +682,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_LOCATION: {
+            case RESULT_PERMISSIONS_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 1
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
@@ -749,8 +749,13 @@ public class MainActivity extends AppCompatActivity {
             locationY = data.getDoubleExtra("y", -1);
             getStationList(locationX, locationY);
 
-        } else if (requestCode == PERMISSION_SETTING_LOCATION) {
-            onResume();
+        } else if (requestCode == CConstants.RESULT_PERMISSION_LOCATION_SETTINGS) {
+            getLocationData();
+
+        } else if (requestCode == RESULT_LOCATION_SETTINGS) {
+            if (isLocationServiceEnabled()) {
+                getLocationData();
+            }
         }
     }
 
@@ -769,6 +774,55 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         Uri uri = Uri.fromParts("package", getPackageName(), null);
         intent.setData(uri);
-        startActivityForResult(intent, PERMISSION_SETTING_LOCATION);
+        startActivityForResult(intent, CConstants.RESULT_PERMISSION_LOCATION_SETTINGS);
+    }
+
+    /**
+     * 위치 설정 켜졌는지 여부 리턴
+     *
+     * @return 위치 설정 켜짐 여부
+     */
+    public boolean isLocationServiceEnabled() {
+        LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+        boolean gpsEnabled = false, networkEnabled = false;
+
+        try {
+            gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch (Exception e) {
+            LogHelper.errorStackTrace(e);
+        }
+
+        try {
+            networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch (Exception e) {
+            LogHelper.errorStackTrace(e);
+        }
+
+        return gpsEnabled || networkEnabled;
+    }
+
+    /**
+     * 위치 설정 안내 다이얼로그 보여줌
+     */
+    private void showLocationSettingDialog() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
+        alertDialog.setTitle("위치 설정 안내")
+                .setMessage("현재 위치의 미세먼지 정보를 받으시려면 위치 설정을 '사용'으로 변경해 주세요.")
+                .setPositiveButton("설정하기", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        intent.addCategory(Intent.CATEGORY_DEFAULT);
+                        startActivityForResult(intent, RESULT_LOCATION_SETTINGS);
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .create().show();
     }
 }
