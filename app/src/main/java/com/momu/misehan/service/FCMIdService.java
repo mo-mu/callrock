@@ -17,8 +17,5 @@ public class FCMIdService extends FirebaseInstanceIdService  {
     public void onTokenRefresh() {
         super.onTokenRefresh();
 
-
-        String refreshToken = FirebaseInstanceId.getInstance().getToken();
-        LogHelper.e(TAG, refreshToken);
     }
 }

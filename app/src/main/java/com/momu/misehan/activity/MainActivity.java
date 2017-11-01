@@ -7,14 +7,18 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.view.KeyEvent;
@@ -35,7 +39,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -66,12 +75,11 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.fabric.sdk.android.Fabric;
 
-import static com.momu.misehan.constant.CConstants.PERMISSION_SETTING_LOCATION;
 
 /**
  * 메인화면
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     @BindView(R.id.drawerLayout) DrawerLayout drawerLayout;
     @BindView(R.id.navView) NavigationView navigationView;
@@ -108,13 +116,19 @@ public class MainActivity extends AppCompatActivity {
 
     int pm10Grade, pm25Grade;
 
-    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 11;  //위치정보 권한 확인
+    LocationManager locationManager;
+    LocationRequest mLocationRequest;
+    GoogleApiClient mGoogleApiClient;
+
+    private static final int RESULT_PERMISSIONS_LOCATION = 11;      //위치정보 권한 확인
+    private static final int RESULT_LOCATION_SETTINGS = 12;     //위치정보 설정 확인
 
 //    JSONObject stationDetailObject = null;      //측정소에서 측정한 미세먼지 정보
 
+//    public boolean isSearch = false;
+
     private static final String TAG = "MainActivity";
 
-//    public boolean isSearch = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +140,11 @@ public class MainActivity extends AppCompatActivity {
         mContext = this;
         initView();
         initDrawer();
+
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
 
         if (AppPreference.loadIsUseSearchedStation(mContext) && !AppPreference.loadLastMeasureStation(mContext).equals("")) {       //검색한 위치 이용하는 경우
             if (Utility.shouldRefreshDetail(mContext)) {         //최근 갱신한 시간을 불러와서 갱신할지 여부 확인
@@ -136,7 +154,6 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject jsonObject = new JSONObject(AppPreference.loadLastMeasureStation(mContext));
                     getStationDetail(jsonObject.getString("stationName"), jsonObject.getString("measureAddr"));
 
-//                    updateWidget(); //위젯 업데이트
                 } catch (Exception e) {
                     LogHelper.errorStackTrace(e);
                     updateWidget();
@@ -146,13 +163,27 @@ public class MainActivity extends AppCompatActivity {
                 LogHelper.e(TAG, "측정할 시간이 되지 않아 서버에서 갱신하지 않음, 최근 측정 시간 : " + AppPreference.loadLastMeasureTime(mContext));
                 updateWidget();
             }
+        } else  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            LogHelper.e(TAG, "위치 권한 주어지지 않음");
+            // Should we show an explanation?
 
-        } else {
-            LogHelper.e(TAG, "위치정보를 이용하여 측정함");
+            // No explanation needed, we can request the permission.
+            ActivityCompat.requestPermissions(MainActivity.this
+                    , new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}
+                    , RESULT_PERMISSIONS_LOCATION);
+
+
+        } else if (isLocationServiceEnabled()) {
+            LogHelper.e(TAG, "위치 권한 주어짐, 위치정보를 이용하여 측정함");
+            buildGoogleApiClient();
+
             // TODO: 2017. 9. 8. 위치정보를 이용하는 측정소가 변경될 수 있으므로 시간 확인을 어떻게 할지 생각이 필요하다.
             // TODO 측정소명까지만 무조건 확인하고, 직전의 측정소랑 다를 경우에는 시간이 넘어가지 않더라도 getStationDetail 함수를 호출하는 방식이 좋을 것 같음.
             // TODO 일단은 위치정보 이용시 시간 상관없이 무조건 서버에서 값을 갱신하도록 해 놓았다.
-            getLocationData();
+//            getLocationData();
+        } else {
+            showLocationSettingDialog();
         }
 
     }
@@ -252,36 +283,37 @@ public class MainActivity extends AppCompatActivity {
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             LogHelper.e(TAG, "위치 권한 주어지지 않음");
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.READ_CONTACTS)) {
 
-                LogHelper.e(TAG, "권한 확인 1");
+            // No explanation needed, we can request the permission.
+            ActivityCompat.requestPermissions(MainActivity.this
+                    , new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}
+                    , RESULT_PERMISSIONS_LOCATION);
+            return;
 
-            } else {
-                LogHelper.e(TAG, "권한 확인 2");
-
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(MainActivity.this
-                        , new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}
-                        , MY_PERMISSIONS_REQUEST_LOCATION);
-                return;
-            }
+        } else if (!isLocationServiceEnabled()) {       //위치 정보 권한은 있지만 위치 설정은 꺼놓음
+            showLocationSettingDialog();
 
         } else {    //위치 정보 권한 있음
+
             LogHelper.e(TAG, "위치 권한 주어짐");
+
             mFusedLocationClient.getLastLocation()
                     .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
-                            // Got last known location. In some rare situations this can be null.
+                            // Got last known locationManager. In some rare situations this can be null.
                             if (location != null) {
                                 // ...
                                 locationX = location.getLongitude();
                                 locationY = location.getLatitude();
-                                LogHelper.e(TAG, "위치정보 : " + locationX + ", " + locationY);
+                                LogHelper.e(TAG, "위치정보 받아오기 성공 : " + locationX + ", " + locationY);
 //                            locationX = 126.9004613;
 //                            locationY = 37.5347978;
 
-                                getStationList(locationX, locationY);
+//                                getStationList(locationX, locationY); //// TODO: 2017. 10. 29.
+                            } else {
+                                LogHelper.e(TAG, "위치 정보 못 받아옴, null");
+                                Toast.makeText(mContext, "현재 위치 정보를 받아오지 못하였습니다.", Toast.LENGTH_SHORT).show();
                             }
                         }
                     })
@@ -682,14 +714,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_LOCATION: {
+            case RESULT_PERMISSIONS_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 1
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     LogHelper.e(TAG, "권한 확인 3");
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    getLocationData();
+                    buildGoogleApiClient();
+//                    getLocationData();
                 } else {
                     LogHelper.e(TAG, "권한 확인 4");
                     // permission denied, boo! Disable the
@@ -724,13 +757,6 @@ public class MainActivity extends AppCompatActivity {
                         });
                         mDialog.show();
 
-                    } else if (Manifest.permission.WRITE_CONTACTS.equals(permissions[1])) {
-                        Toast.makeText(mContext, "Hi! 2", Toast.LENGTH_SHORT).show();
-                        //  showRationale( permissions[0], R.string.permission_denied_contacts);
-                        // user did NOT check "never ask again"
-                        // this is a good place to explain the user
-                        // why you need the permission and ask if he wants
-                        // to accept it (the rationale)
                     }
                 }
                 return;
@@ -744,13 +770,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CConstants.SEARCH_LOCATION && resultCode == CConstants.SELECT_ITEM) {
+        if (requestCode == CConstants.RESULT_SEARCH_LOCATION && resultCode == CConstants.RESULT_SELECT_ITEM) {
             locationX = data.getDoubleExtra("x", -1);
             locationY = data.getDoubleExtra("y", -1);
             getStationList(locationX, locationY);
 
-        } else if (requestCode == PERMISSION_SETTING_LOCATION) {
-            onResume();
+        } else if (requestCode == CConstants.RESULT_PERMISSION_SETTINGS) {
+            getLocationData();
+
+        } else if (requestCode == RESULT_LOCATION_SETTINGS) {
+            if (isLocationServiceEnabled()) {
+                buildGoogleApiClient();
+            }
         }
     }
 
@@ -759,7 +790,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void openSearchPage() {
         Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-        startActivityForResult(intent, CConstants.SEARCH_LOCATION);
+        startActivityForResult(intent, CConstants.RESULT_SEARCH_LOCATION);
     }
 
     /**
@@ -769,6 +800,114 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         Uri uri = Uri.fromParts("package", getPackageName(), null);
         intent.setData(uri);
-        startActivityForResult(intent, PERMISSION_SETTING_LOCATION);
+        startActivityForResult(intent, CConstants.RESULT_PERMISSION_SETTINGS);
     }
+
+    /**
+     * 위치 설정 켜졌는지 여부 리턴
+     *
+     * @return 위치 설정 켜짐 여부
+     */
+    public boolean isLocationServiceEnabled() {
+        LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+        boolean gpsEnabled = false, networkEnabled = false;
+
+        try {
+            gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch (Exception e) {
+            LogHelper.errorStackTrace(e);
+        }
+
+        try {
+            networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch (Exception e) {
+            LogHelper.errorStackTrace(e);
+        }
+
+        return gpsEnabled || networkEnabled;
+    }
+
+    /**
+     * 위치 설정 안내 다이얼로그 보여줌
+     */
+    private void showLocationSettingDialog() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
+        alertDialog.setTitle("위치 설정 안내")
+                .setMessage("현재 위치의 미세먼지 정보를 받으시려면 위치 설정을 '사용'으로 변경해 주세요.")
+                .setPositiveButton("설정하기", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        intent.addCategory(Intent.CATEGORY_DEFAULT);
+                        startActivityForResult(intent, RESULT_LOCATION_SETTINGS);
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .create().show();
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
+    }
+
+    LocationCallback mLocationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            for (Location location : locationResult.getLocations()) {
+                LogHelper.e(TAG, "Location callBack : " + location.getLatitude() + " " + location.getLongitude());
+
+            }
+
+            getLocationData();
+        }
+    };
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        //stop location updates when Activity is no longer active
+        if (mFusedLocationClient != null) {
+            try {
+                mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+            } catch (Exception e) {
+                LogHelper.errorStackTrace(e);
+            }
+        }
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        LogHelper.e(TAG, "onConnected 진입");
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(20000); // two minute interval
+        mLocationRequest.setFastestInterval(10000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LogHelper.e(TAG, "onConnected, 위치 권한 주어짐");
+            mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+        } else {
+            LogHelper.e(TAG, "onConnected, 위치 권한 주어지지 않음");
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+    }
+
 }

@@ -73,8 +73,14 @@ dependencies {
         transitive = true;
     }
 
+    //Firebase
     compile 'com.google.firebase:firebase-core:11.0.4'
     compile 'com.google.firebase:firebase-messaging:11.0.4'
+
+    //애니메이션 Lottie
     compile 'com.airbnb.android:lottie:2.2.5'
+
+    //위치 정보
+    compile 'com.google.android.gms:play-services-location:11.0.4'
 }
 

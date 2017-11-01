@@ -51,7 +51,7 @@ public class SearchAdapter extends RecyclerView.Adapter {
                 gotoMain.putExtra("x", curItem.getLongitude());
                 gotoMain.putExtra("y", curItem.getLatitude());
 
-                context.setResult(CConstants.SELECT_ITEM, gotoMain);
+                context.setResult(CConstants.RESULT_SELECT_ITEM, gotoMain);
                 context.finish();
             }
         });
