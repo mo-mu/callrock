@@ -61,7 +61,6 @@ public class WidgetProvider extends AppWidgetProvider {
     Handler handler = new Handler();
 
     AppWidgetManager appWidgetManager;
-    private FirebaseAnalytics mFirebaseAnalytics;
 
     private FusedLocationProviderClient mFusedLocationClient;
 

@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#cccccc</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="pushColor">#c58b2c</color>
+
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="textColor">#464646</color>

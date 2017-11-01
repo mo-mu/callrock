@@ -70,8 +70,23 @@ public class FCMservice extends FirebaseMessagingService {
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this,CConstants.default_notification_channel_id)
-                .setSmallIcon(R.drawable.noti_icon)
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this,CConstants.default_notification_channel_id);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel("hi", "My Notifications", NotificationManager.IMPORTANCE_DEFAULT);
+
+            // Configure the notification channel.
+            notificationChannel.setDescription("Channel description");
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.enableVibration(true);
+            notificationManager.createNotificationChannel(notificationChannel);
+            notificationBuilder.setChannelId("hi");
+        }
+
+        notificationBuilder.setSmallIcon(R.drawable.noti_icon)
                 .setTicker("미세한")
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)
@@ -79,10 +94,9 @@ public class FCMservice extends FirebaseMessagingService {
                 .setContentText(messageBody)
                 .setSound(defaultSoundUri)
                 .setPriority(Notification.PRIORITY_MAX)
+                .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .setContentIntent(pendingIntent);
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(0, notificationBuilder.build());
     }
