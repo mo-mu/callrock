@@ -1,6 +1,7 @@
 package com.momu.misehan.utility;
 
 import android.content.Context;
+import android.location.LocationManager;
 
 import com.momu.misehan.preference.AppPreference;
 
@@ -271,5 +272,29 @@ public class Utility {
             LogHelper.errorStackTrace(e);
             return true;
         }
+    }
+
+    /**
+     * 위치 설정 켜졌는지 여부 리턴
+     *
+     * @return 위치 설정 켜짐 여부
+     */
+    public static boolean isLocationServiceEnabled(Context mContext) {
+        LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+        boolean gpsEnabled = false, networkEnabled = false;
+
+        try {
+            gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch (Exception e) {
+            LogHelper.errorStackTrace(e);
+        }
+
+        try {
+            networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch (Exception e) {
+            LogHelper.errorStackTrace(e);
+        }
+
+        return gpsEnabled || networkEnabled;
     }
 }

@@ -15,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -403,33 +404,39 @@ public class WidgetProvider extends AppWidgetProvider {
 
         } else {    //위치 정보 권한 있음
             LogHelper.e(TAG, "위치 권한 주어짐");
-            mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                // ...
-                                Double locationX = location.getLongitude();
-                                Double locationY = location.getLatitude();
-                                LogHelper.e(TAG, "위치정보 : " + locationX + ", " + locationY);
+            if(Utility.isLocationServiceEnabled(mContext)) {
+                mFusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                // Got last known location. In some rare situations this can be null.
+                                if (location != null) {
+                                    // ...
+                                    Double locationX = location.getLongitude();
+                                    Double locationY = location.getLatitude();
+                                    LogHelper.e(TAG, "위치정보 : " + locationX + ", " + locationY);
 //                            locationX = 126.9004613;
 //                            locationY = 37.5347978;
 
-                                getStationList(mContext, locationX, locationY);
-                            } else {
+                                    getStationList(mContext, locationX, locationY);
+                                } else {
+                                    setFailedUi(mContext);
+                                    //// TODO: 2018. 1. 1. 여기서 위치정보 업데이트 작업을 해야된다.
+                                }
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                LogHelper.errorStackTrace(e);
+                                //현재 위치 못 받아옴.
                                 setFailedUi(mContext);
                             }
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            LogHelper.errorStackTrace(e);
-                            //현재 위치 못 받아옴.
-                            setFailedUi(mContext);
-                        }
-                    });
+                        });
+            } else {
+                setFailedUi(mContext);
+                Toast.makeText(mContext, "위치 설정을 켜신 후 갱신이 가능합니다.", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
