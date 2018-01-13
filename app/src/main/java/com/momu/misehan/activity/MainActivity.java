@@ -21,6 +21,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -31,6 +32,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -64,6 +66,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -90,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @BindView(R.id.txt_time_sync) TextView txtSyncTime;
     @BindView(R.id.txt_status_main) TextView txtGradeMain;
     @BindView(R.id.btn_refresh) TextView btnRefresh;
-    @BindView(R.id.img_cat) ImageView imgMain;
+    @BindView(R.id.img_cat) LottieAnimationView imgMain;
     @BindView(R.id.img_dot10) ImageView imgDot10;
     @BindView(R.id.img_dot25) ImageView imgDot25;
     @BindView(R.id.switch_who) SwitchCompat switchWho;     //WHO기준 여부 스위치
@@ -577,22 +581,30 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
         switch (mainGrade) {
-            case 0:
-                imgMain.setImageResource(R.drawable.ic_status_1);
+           case 0:
+                imgMain.setAnimation("json/good/good.json");
+                imgMain.setImageAssetsFolder("json/good/images");
                 break;
             case 1:
-                imgMain.setImageResource(R.drawable.ic_status_2);
+                imgMain.setAnimation("json/normal/normal.json");
+                imgMain.setImageAssetsFolder("json/normal/images");
                 break;
             case 2:
-                imgMain.setImageResource(R.drawable.ic_status_3);
+                imgMain.setAnimation("json/bad/bad.json");
+                imgMain.setImageAssetsFolder("json/bad/images");
                 break;
             case 3:
-                imgMain.setImageResource(R.drawable.ic_status_4);
+                imgMain.setAnimation("json/verybad/verybad.json");
+                imgMain.setImageAssetsFolder("json/verybad/images");
                 break;
             default:
-                imgMain.setImageResource(R.drawable.ic_status_5);
+                imgMain.setAnimation("json/noinfo/noinfo.json");
+                imgMain.setImageAssetsFolder("json/noinfo/images");
                 break;
         }
+
+        imgMain.playAnimation();
+        imgMain.loop(true);
 
         btnRefresh.setText(detailObject.getString("measuredAddress"));
         updateWidget();
@@ -921,5 +933,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         } else {
             LogHelper.e(TAG, "UPDATELOCATION 1");
         }
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        imgMain.playAnimation();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        imgMain.cancelAnimation();
     }
 }

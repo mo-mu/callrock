@@ -18,9 +18,9 @@
             android:id="@+id/animation_view"
             android:layout_width="178dp"
             android:layout_height="100dp"
-            app:lottie_fileName="json/splash.json"
+            app:lottie_fileName="json/splash/splash.json"
             app:lottie_loop="true"
-            app:lottie_imageAssetsFolder="json/images/splash"
+            app:lottie_imageAssetsFolder="json/splash/images/splash"
             app:lottie_autoPlay="true"/>
         <TextView
             android:id="@+id/txtTitle"
