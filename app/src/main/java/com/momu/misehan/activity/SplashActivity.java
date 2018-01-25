@@ -19,7 +19,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.crashlytics.android.Crashlytics;
-import com.google.firebase.analytics.FirebaseAnalytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.momu.misehan.R;
 import com.momu.misehan.constant.CConstants;
 import com.momu.misehan.dialog.PermissionDialog;
@@ -32,6 +32,7 @@ import org.json.JSONObject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.fabric.sdk.android.BuildConfig;
 import io.fabric.sdk.android.Fabric;
 
 /**
@@ -42,30 +43,29 @@ public class SplashActivity extends AppCompatActivity {
 
     private Context mContext;
 
-    @BindView(R.id.txtTitle) TextView txtTitle;
-    @BindView(R.id.animation_view) LottieAnimationView animationView;
+    @BindView(R.id.txt_title) TextView txtTitle;
+    @BindView(R.id.view_anim_splash) LottieAnimationView animationView;
 
     private static final String TAG = "SplashActivity";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Crashlytics.Builder().core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()).build());
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
         mContext = this;
 
-        Typeface typeFace1 = Typeface.createFromAsset(getAssets(), CConstants.FONT_NANUM_MYEONGJO);
-        txtTitle.setTypeface(typeFace1);
+        txtTitle.setTypeface(Typeface.createFromAsset(getAssets(), CConstants.FONT_NANUM_MYEONGJO));
 
-        getObserve();
+        getAllStationList();
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (AppPreference.loadIsFirst(mContext)) {  // 앱 설치 후 퍼미션 설정 페이지 봤을 때
-
                     openMain();
+
                 } else { // 페이지 안봤을 때
 
                     PermissionDialog mDialog = new PermissionDialog(mContext);
@@ -91,7 +91,10 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
-    private void getObserve() {
+    /**
+     * 모든 측정소 목록을 불러온다.
+     */
+    private void getAllStationList() {
         RequestQueue queue = Volley.newRequestQueue(this);
 
         final SharedPreferences preferences = getSharedPreferences("Pref", MODE_PRIVATE);
@@ -174,7 +177,7 @@ public class SplashActivity extends AppCompatActivity {
         } catch (Exception e) {
             LogHelper.e(TAG, e.toString());
         }
-        startActivity(new Intent(SplashActivity.this, MainActivity.class));
+        startActivity(new Intent(mContext, MainActivity.class));
         AppPreference.saveIsFirst(mContext, true);
         finish();
     }
